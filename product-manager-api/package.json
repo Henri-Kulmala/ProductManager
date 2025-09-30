@@ -1,0 +1,21 @@
+{
+  "name": "product-manager-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.3",
+    "next": "15.5.4",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "prisma": "^6.16.3",
+    "typescript": "^5"
+  }
+}
