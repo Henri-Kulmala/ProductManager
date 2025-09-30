@@ -12,12 +12,12 @@ model Product {
   id          String   @id @default(cuid())
   name        String
   description String?
-  priceCents  Int
-  isPublished Boolean  @default(false)
+  price  Decimal @db.Decimal(10,2)
+
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([isPublished, createdAt])
+  @@index([createdAt])
   @@index([name])
 }
