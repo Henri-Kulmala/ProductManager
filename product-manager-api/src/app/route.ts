@@ -4,12 +4,18 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const search = url.searchParams.get("search") ?? undefined;
+<<<<<<< HEAD
   const published = url.searchParams.get("published") === "true";
+=======
+>>>>>>> dev
   const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
   const cursor = url.searchParams.get("cursor") || undefined;
 
   const where: any = {};
+<<<<<<< HEAD
   if (published) where.isPublished = true;
+=======
+>>>>>>> dev
   if (search) where.name = { contains: search, mode: "insensitive" };
 
   const items = await prisma.product.findMany({

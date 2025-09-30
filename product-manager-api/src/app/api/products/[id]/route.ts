@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { withCORS, preflight } from "@/lib/cors";
+<<<<<<< HEAD
 import { ProductCreate } from "@/lib/validation"; // reuse as “update” by partial()
 
 const ProductUpdate = ProductCreate.partial();
+=======
+import { ProductUpdateSchema } from "@/lib/validation";
+>>>>>>> dev
 
 type Ctx = { params: { id: string } };
 
@@ -19,7 +23,11 @@ export async function GET(req: Request, { params }: Ctx) {
 
 export async function PUT(req: Request, { params }: Ctx) {
   const body = await req.json().catch(() => null);
+<<<<<<< HEAD
   const parsed = ProductUpdate.safeParse(body);
+=======
+  const parsed = ProductUpdateSchema.safeParse(body);
+>>>>>>> dev
   if (!parsed.success) {
     return withCORS(
       Response.json({ error: parsed.error.message }, { status: 400 }),
@@ -29,7 +37,17 @@ export async function PUT(req: Request, { params }: Ctx) {
   try {
     const updated = await prisma.product.update({
       where: { id: params.id },
+<<<<<<< HEAD
       data: parsed.data,
+=======
+      data: {
+        ...("name" in parsed.data ? { name: parsed.data.name } : {}),
+        ...("description" in parsed.data
+          ? { description: parsed.data.description ?? null }
+          : {}),
+        ...("price" in parsed.data ? { price: parsed.data.price } : {}), // string "12.34"
+      },
+>>>>>>> dev
     });
     return withCORS(Response.json(updated), req);
   } catch {
