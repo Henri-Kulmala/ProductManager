@@ -1,13 +1,11 @@
-// lib/validation.ts
 import { z } from "zod";
-
 export const ProductSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  price: z.string().transform((v) => {
-    const n = Number(v.replace(",", ".").trim());
-    if (!isFinite(n)) throw new Error("Invalid price");
-    return n.toFixed(2); // "57.90" (string) for Decimal
-  }),
+  name: z.string().min(1, "Tuotenimi vaaditaan"),
+  ingredients: z.string().optional(),
+  allergens: z.string().optional(),
+  price: z.string().optional(),
+  EAN: z.string().optional(),
+  photoUrl: z.string().url("Virheellinen URL").optional().or(z.literal("")),
+  size: z.string().optional(),
 });
-export const ProductUpdateSchema = ProductSchema.partial();
+export type ProductInput = z.infer<typeof ProductSchema>;

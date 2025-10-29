@@ -20,6 +20,7 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
+
   const { data, isFetching, refetch } = useQuery({
     queryKey: ["products", { search, cursor }],
     queryFn: () =>
@@ -68,6 +69,7 @@ export default function App() {
     },
   });
 
+
   function toggleSelect(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -78,37 +80,50 @@ export default function App() {
 
   function toggleAll(checked: boolean) {
     setSelected(() => {
-      if (!checked) return new Set(); // clear all
-      return new Set(items.map((i) => i.id)); // select all visible items
+      if (!checked) return new Set(); 
+      return new Set(items.map((i) => i.id)); 
     });
   }
 
+
   return (
     <div className="wrap">
-      <header className="row space">
+      <header className="admin-header">
         <h1>Tuotelistan hallinta</h1>
-        <div className="row gap">
-          <input
-            placeholder="Hae tuotteita..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
 
-          <button
-            className="iconButton"
-            onClick={() => {
-              setEditing(null);
-              setShowForm(true);
-            }}>
-            <IoIosAddCircle size={24} color="#F58320" />
-          </button>
+        <div className="admin-toolbar">
+          <div className="search-box">
+            <input
+              placeholder="🔍  Hae tuotteita..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-          <button
-            className="danger"
-            disabled={selected.size === 0 || deleteMut.isPending}
-            onClick={() => deleteMut.mutate(Array.from(selected))}>
-            Poista valitut ({selected.size})
-          </button>
+          <div className="form-actions">
+            <button
+              className="btn-accent"
+              onClick={() => {
+                setEditing(null);
+                setShowForm(true);
+              }}>
+              + Uusi tuote
+            </button>
+
+            <button
+              className="btn-danger-outline"
+              disabled={selected.size === 0 || deleteMut.isPending}
+              onClick={() => {
+                const confirmDelete = window.confirm(
+                  "Haluatko varmasti poistaa valitut tuotteet?"
+                );
+                if (confirmDelete) {
+                  deleteMut.mutate(Array.from(selected));
+                }
+              }}>
+              Poista valitut ({selected.size})
+            </button>
+          </div>
         </div>
       </header>
 
@@ -156,7 +171,7 @@ function ListArea(props: {
   onNext: () => void;
   onEdit: (p: Product) => void;
   selected: Set<string>;
-  onToggle: (id: string) => void; // <-- add
+  onToggle: (id: string) => void; 
   onToggleAll: (checked: boolean) => void;
 }) {
   return (
@@ -164,15 +179,18 @@ function ListArea(props: {
       <ProductsTable
         items={props.items}
         selected={props.selected}
-        onToggle={props.onToggle} // <-- use props
-        onToggleAll={props.onToggleAll} // <-- use props
+        onToggle={props.onToggle}
+        onToggleAll={props.onToggleAll}
         onEdit={props.onEdit}
       />
-      <div className="row space">
+      <div className="form-actions">
         <span style={{ opacity: 0.6 }}>
           {props.isFetching ? "Lataa..." : `${props.items.length} tuotetta`}
         </span>
-        <button disabled={!props.nextCursor} onClick={props.onNext}>
+        <button
+          className="btn-primary-outline"
+          disabled={!props.nextCursor}
+          onClick={props.onNext}>
           Seuraava sivu
         </button>
       </div>

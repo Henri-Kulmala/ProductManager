@@ -16,38 +16,82 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ProductInput>({ resolver: zodResolver(ProductSchema) });
+  } = useForm<ProductInput>({
+    resolver: zodResolver(ProductSchema),
+  });
 
   useEffect(() => {
     reset({
       name: initial?.name ?? "",
-      description: initial?.description ?? "",
-      price: initial?.price !== undefined ? Number(initial.price) : 0
+      size: initial?.size ?? "",
+      ingredients: initial?.ingredients ?? "",
+      allergens: initial?.allergens ?? "",
+      photoUrl: initial?.photoUrl ?? "",
+      price: initial?.price ?? "",
+      EAN: initial?.EAN ?? "",
     });
   }, [initial, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="form">
-      <label>
-        Nimi
-        <input {...register("name")} />
+    <form onSubmit={handleSubmit(onSubmit)} className="form-grid">
+      <div className="form-group">
+        <label>Tuotenimi</label>
+        <input {...register("name")} placeholder="Esim. Tomaattikeitto" />
         {errors.name && <span className="err">{errors.name.message}</span>}
-      </label>
-      <label>
-        Kuvaus
-        <textarea {...register("description")} rows={3} />
-      </label>
-      <label>
-        Hinta 
-        <input type="text" {...register("price")} />
+      </div>
+
+      <div className="form-group">
+        <label>Koko</label>
+        <input {...register("size")} placeholder="Esim. 250 g / 500 ml" />
+        {errors.size && <span className="err">{errors.size.message}</span>}
+      </div>
+
+      <div className="form-group full">
+        <label>Ainesosat</label>
+        <textarea
+          rows={3}
+          placeholder="Kirjoita pilkuilla tai riveittäin: maito, kaakao, sokeri"
+          {...register("ingredients")}
+        />
+        {errors.ingredients && (
+          <span className="err">{errors.ingredients.message}</span>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label>Allergeenit</label>
+        <input {...register("allergens")} placeholder="maito, pähkinä" />
+        {errors.allergens && (
+          <span className="err">{errors.allergens.message}</span>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label>Valokuvan URL</label>
+        <input {...register("photoUrl")} placeholder="https://…" />
+        {errors.photoUrl && (
+          <span className="err">{errors.photoUrl.message}</span>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label>Hinta</label>
+        <input {...register("price")} placeholder="9,99 €" />
         {errors.price && <span className="err">{errors.price.message}</span>}
-      </label>
-      <div className="row gap">
-        <button type="submit" disabled={isSubmitting}>
-          {initial ? "Päivitä" : "Luo"}
+      </div>
+
+      <div className="form-group">
+        <label>EAN-Koodi</label>
+        <input {...register("EAN")} placeholder="123456789..." />
+        {errors.EAN && <span className="err">{errors.EAN.message}</span>}
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" disabled={isSubmitting} className="btn-primary">
+          {initial ? "Päivitä tuote" : "Luo tuote"}
         </button>
-        <button type="button" className="secondary" onClick={onCancel}>
-          Kumoa
+        <button type="button" onClick={onCancel} className="btn-secondary">
+          Peruuta
         </button>
       </div>
     </form>

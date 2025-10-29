@@ -1,6 +1,8 @@
+
+
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
 }
 
 generator client {
@@ -10,23 +12,16 @@ generator client {
 
 model Product {
   id          String   @id @default(cuid())
-  name        String
-  description String?
-<<<<<<< HEAD
-  priceCents  Int
-  isPublished Boolean  @default(false)
-=======
-  price  Decimal @db.Decimal(10,2)
-
->>>>>>> dev
+  name        String                 // Tuotenimi
+  ingredients String?                // Ainesosat (comma- or newline-separated)
+  allergens   String?                // Allergeenit (comma-separated)
+  size        String?
+  price       String?
+  EAN         String?                
+  photoUrl    String?                // PhotoURL
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-<<<<<<< HEAD
-  @@index([isPublished, createdAt])
-=======
-  @@index([createdAt])
->>>>>>> dev
   @@index([name])
 }
