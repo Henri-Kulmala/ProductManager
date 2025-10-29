@@ -33,50 +33,59 @@ export default function ProductsTable({
   }, [someChecked]);
 
   return (
-    <table className="tbl">
-      <thead>
-        <tr>
-          <th>
-            <input
-              ref={masterRef}
-              type="checkbox"
-              checked={allChecked}
-              onChange={(e) => onToggleAll(e.currentTarget.checked)}
-              aria-checked={someChecked ? "mixed" : allChecked}
-            />
-          </th>
-          <th>Nimi</th>
-          <th>Hinta</th>
-          <th>Muokattu</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {items.map((p) => (
-          <tr key={p.id}>
-            <td>
-              <input
-                type="checkbox"
-                checked={selected.has(p.id)}
-                onChange={() => onToggle(p.id)}
-              />
-            </td>
-            <td>{p.name}</td>
-            <td>{Number(p.price).toFixed(2)} €</td>
-            <td>{new Date(p.updatedAt).toLocaleString()}</td>
-            <td>
-              <button onClick={() => onEdit(p)}>Muokkaa</button>
-            </td>
-          </tr>
-        ))}
-        {items.length === 0 && (
+    <div className="table-wrapper">
+      <table className="tbl">
+        <thead>
           <tr>
-            <td colSpan={6} style={{ textAlign: "center", opacity: 0.7 }}>
-              Ei tuloksia
-            </td>
+            <th>
+              <input
+                ref={masterRef}
+                type="checkbox"
+                checked={allChecked}
+                onChange={(e) => onToggleAll(e.currentTarget.checked)}
+                aria-checked={someChecked ? "mixed" : allChecked}
+              />
+            </th>
+            <th>Tuotenimi</th>
+            <th>EAN</th>
+            <th>Ainesosat</th>
+            <th>Päivitetty</th>
+            <th></th>
           </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {items.map((p) => (
+            <tr key={p.id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={selected.has(p.id)}
+                  onChange={() => onToggle(p.id)}
+                />
+              </td>
+              <td className="product-name">{p.name}</td>
+              <td>{p.EAN ?? "-"}</td>
+              <td className="truncate">
+                {p.ingredients ?? <span style={{ opacity: 0.5 }}>–</span>}
+              </td>
+              <td>{new Date(p.updatedAt).toLocaleDateString("fi-FI")}</td>
+              <td>
+                <button className="btn-edit" onClick={() => onEdit(p)}>
+                  Muokkaa
+                </button>
+              </td>
+            </tr>
+          ))}
+          {items.length === 0 && (
+            <tr>
+              <td colSpan={6} className="empty-state">
+                Ei tuloksia
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
+
 }

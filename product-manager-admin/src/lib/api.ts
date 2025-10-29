@@ -12,7 +12,15 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
   return res.status === 204 ? (undefined as any) : res.json();
 }
 
-// CRUD
+// -------- Types you edit via the form (only the 4 fields) --------
+export type ProductPayload = {
+  name: string; // Tuotenimi
+  ingredients?: string; // Ainesosat (comma/newline separated)
+  allergens?: string; // Allergeenit
+  photoUrl?: string; // PhotoURL
+};
+
+// -------- CRUD --------
 export const listProducts = (opts?: {
   search?: string;
   limit?: number;
@@ -28,16 +36,15 @@ export const listProducts = (opts?: {
   );
 };
 
-export const createProduct = (data: Partial<import("../types").Product>) =>
+// Create with only the editable fields
+export const createProduct = (data: ProductPayload) =>
   http<import("../types").Product>("/products", {
     method: "POST",
     body: JSON.stringify(data),
   });
 
-export const updateProduct = (
-  id: string,
-  data: Partial<import("../types").Product>
-) =>
+// Update allows a subset of those fields
+export const updateProduct = (id: string, data: Partial<ProductPayload>) =>
   http<import("../types").Product>(`/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),

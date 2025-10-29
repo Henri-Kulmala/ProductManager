@@ -1,24 +1,33 @@
-<<<<<<< HEAD
-import { z } from "zod";
-export const ProductCreate = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  priceCents: z.number().int().nonnegative(),
-  isPublished: z.boolean().optional(),
-});
-export type ProductCreate = z.infer<typeof ProductCreate>;
-=======
-// lib/validation.ts
 import { z } from "zod";
 
 export const ProductSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().optional(),
-  price: z.string().transform((v) => {
-    const n = Number(v.replace(",", ".").trim());
-    if (!isFinite(n)) throw new Error("Invalid price");
-    return n.toFixed(2); // "57.90" (string) for Decimal
-  }),
+  name: z.string().min(1, "Tuotenimi vaaditaan"),
+  ingredients: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  allergens: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  photoUrl: z
+    .string()
+    .url("Virheellinen URL")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  size: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)), 
+  price: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  EAN: z
+    .string() 
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
 });
+
+export type ProductInput = z.infer<typeof ProductSchema>;
 export const ProductUpdateSchema = ProductSchema.partial();
->>>>>>> dev

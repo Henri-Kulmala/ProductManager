@@ -1,0 +1,154 @@
+@font-face {
+    font-family: "Skatta";
+    src: url(https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Skatta-Sans-Condensed-Regular.woff2) format("woff2"),
+    url(https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Skatta-Sans-Condensed-Regular.ttf) format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Skatta";
+    src: url(https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Skatta-Sans-Condensed-Bold.woff2) format("woff2");
+    font-weight: 700;
+    font-style: normal;
+}
+
+:root {
+    --text: #ffffff;
+    --secondary-text: #F58320;
+    --bg-blue: #1F3063;
+    --font-primary: "Skatta", sans-serif;
+
+}
+
+body {
+    font-family: var(--font-primary);
+    background: #fafafa;
+    margin: 0;
+    color: #222;
+    
+}
+
+.container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.product-card {
+    background: var(--bg-blue);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    user-select: none;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    transition: 100ms ease-in-out;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-header h3 {
+    margin: 0;
+}
+
+.span-label {
+    font-size: 0.9em;
+    color: #b9b9b9;
+    margin-right: 1rem;
+}
+
+.product-details {
+    margin-top: 0.75rem;
+    line-height: 1.5;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: max-height 300ms ease, opacity 200ms ease, transform 300ms ease;
+}
+.product-card.open .product-details {
+    max-height: 400px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--secondary-text)
+}
+.logo {
+    max-width: 200px;
+    display: block;
+    padding: 1rem;
+    margin: 1rem auto;
+    user-select: none;
+}
+
+.secondary-text {
+    color: var(--secondary-text);
+    font-family: var(--font-bold);
+    font-size: 1.15rem;
+}
+.label {
+    color: var(--text);
+}
+.label-name {
+    color: var(--text);
+    font-family: var(--font-bold);
+    font-size: 1.25rem;
+    margin: 0;
+}
+.search-input {
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    border: 2px solid #8b8b8b;
+    outline: 0;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    user-select: none;
+}
+
+.search-icon {
+    color: var(--secondary-text);
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    align-items: center;
+    text-align: center;
+    outline: 0;
+    cursor: pointer;
+    
+}
+.label-icon {
+    color: var(--secondary-text);
+    font-size: 14px;
+    margin-right: 0.5rem;
+    align-items: center;
+    text-align: center;
+    outline: 0;
+    user-select: none;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    user-select: none;
+}
