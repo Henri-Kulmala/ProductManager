@@ -6,7 +6,7 @@ export async function listProducts(search?: string): Promise<Product[]> {
   const params = new URLSearchParams();
   if (search) params.set("search", search.trim());
 
-  const res = await fetch(`${API}/products?${params.toString()}`, {
+  const res = await fetch(`${API}?${params.toString()}`, {
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
