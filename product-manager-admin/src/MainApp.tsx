@@ -1,4 +1,4 @@
-// src/MainApp.tsx
+
 import { useEffect, useState } from "react";
 import { login, logout, getUser } from "./lib/auth";
 import { supabase } from "./lib/supabase";

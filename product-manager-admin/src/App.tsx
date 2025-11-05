@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
@@ -10,7 +10,6 @@ import type { Product } from "./types";
 import ProductForm from "./components/ProductForm";
 import ProductsTable from "./components/ProductsTable";
 
-import { IoIosAddCircle } from "react-icons/io";
 
 export default function App() {
   const qc = useQueryClient();
@@ -21,7 +20,7 @@ export default function App() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
 
-  const { data, isFetching, refetch } = useQuery({
+  const { data, isFetching  } = useQuery({
     queryKey: ["products", { search, cursor }],
     queryFn: () =>
       listProducts({
@@ -29,7 +28,6 @@ export default function App() {
         limit: 20,
         cursor: cursor || undefined,
       }),
-    keepPreviousData: true,
   });
 
   const items = data?.items ?? [];
