@@ -1,26 +1,43 @@
 import { prisma } from "@/lib/prisma";
 import { withCORS, preflight } from "@/lib/cors";
 import { ProductSchema } from "@/lib/validation";
+import { requireUser /*, isAdmin */ } from "@/lib/auth";
 
 export function OPTIONS(req: Request) {
   return preflight(req);
 }
 
-// New Next.js build-compatible context type
+// Keep your build-compatible context
 type RouteContext = { params: Promise<{ id: string }> };
 
 const ProductUpdateSchema = ProductSchema.partial();
 
 export async function GET(req: Request, context: RouteContext) {
-  const { id } = await context.params;
+  const user = await requireUser(req);
+  if (!user)
+    return withCORS(
+      Response.json({ error: "Unauthorized" }, { status: 401 }),
+      req
+    );
+ 
 
+  const { id } = await context.params;
   const item = await prisma.product.findUnique({ where: { id } });
+
   return item
     ? withCORS(Response.json(item), req)
     : withCORS(Response.json({ error: "Not found" }, { status: 404 }), req);
 }
 
 export async function PUT(req: Request, context: RouteContext) {
+  const user = await requireUser(req);
+  if (!user)
+    return withCORS(
+      Response.json({ error: "Unauthorized" }, { status: 401 }),
+      req
+    );
+ 
+
   const { id } = await context.params;
 
   const body = await req.json().catch(() => null);
@@ -61,6 +78,14 @@ export async function PUT(req: Request, context: RouteContext) {
 }
 
 export async function DELETE(req: Request, context: RouteContext) {
+  const user = await requireUser(req);
+  if (!user)
+    return withCORS(
+      Response.json({ error: "Unauthorized" }, { status: 401 }),
+      req
+    );
+ 
+
   const { id } = await context.params;
   try {
     await prisma.product.delete({ where: { id } });

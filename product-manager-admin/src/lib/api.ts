@@ -1,54 +1,90 @@
-const API = import.meta.env.VITE_API_URL as string;
+// src/lib/api.ts
+import { getAccessToken } from "./auth";
+import { supabase } from "./supabase";
 
-async function http<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API}${path}`, {
-    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+const API_URL = import.meta.env.VITE_API_URL!;
+
+// Internal: fetch once with a given token
+async function doFetch(path: string, init: RequestInit, token: string) {
+  const res = await fetch(`${API_URL}${path}`, {
     ...init,
+    headers: {
+      ...(init.headers || {}),
+      Authorization: `Bearer ${token}`,
+     
+      ...(init.body ? { "Content-Type": "application/json" } : {}),
+    },
   });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `HTTP ${res.status}`);
-  }
-  return res.status === 204 ? (undefined as any) : res.json();
+  return res;
 }
 
-// -------- Types you edit via the form (only the 4 fields) --------
-export type ProductPayload = {
-  name: string; // Tuotenimi
-  ingredients?: string; // Ainesosat (comma/newline separated)
-  allergens?: string; // Allergeenit
-  photoUrl?: string; // PhotoURL
-};
+async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let token = await getAccessToken();
+  if (!token) throw new Error("Not authenticated");
 
-// -------- CRUD --------
-export const listProducts = (opts?: {
+  let res = await doFetch(path, init, token);
+
+ 
+  if (res.status === 401) {
+   
+    await supabase.auth.refreshSession();
+    token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated");
+    res = await doFetch(path, init, token);
+  }
+
+  if (res.status === 401 || res.status === 403) {
+    throw new Error("Unauthorized");
+  }
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`API ${res.status}: ${text || res.statusText}`);
+  }
+
+ 
+  if (res.status === 204) return undefined as unknown as T;
+
+ 
+  const ctype = res.headers.get("content-type") || "";
+  if (ctype.includes("application/json")) {
+    return (await res.json()) as T;
+  }
+
+ 
+  const text = (await res.text()) as unknown as T;
+  return text;
+}
+
+export type ListResponse<T> = { items: T[]; nextCursor: string | null };
+
+export async function listProducts(params: {
   search?: string;
   limit?: number;
   cursor?: string;
-}) => {
-  const p = new URLSearchParams();
-  if (opts?.search) p.set("search", opts.search);
-  if (opts?.limit) p.set("limit", String(opts.limit));
-  if (opts?.cursor) p.set("cursor", opts.cursor);
-  const q = p.toString() ? `?${p.toString()}` : "";
-  return http<import("../types").ListResponse<import("../types").Product>>(
-    `/products${q}`
-  );
-};
+}) {
+  const qs = new URLSearchParams();
+  if (params.search) qs.set("search", params.search);
+  if (params.limit) qs.set("limit", String(params.limit));
+  if (params.cursor) qs.set("cursor", params.cursor);
+  const q = qs.toString();
+  return apiFetch<ListResponse<any>>(`/api/products${q ? `?${q}` : ""}`);
+}
 
-// Create with only the editable fields
-export const createProduct = (data: ProductPayload) =>
-  http<import("../types").Product>("/products", {
+export async function createProduct(data: any) {
+  return apiFetch<any>("/api/products", {
     method: "POST",
     body: JSON.stringify(data),
   });
+}
 
-// Update allows a subset of those fields
-export const updateProduct = (id: string, data: Partial<ProductPayload>) =>
-  http<import("../types").Product>(`/products/${id}`, {
+export async function updateProduct(id: string, data: any) {
+  return apiFetch<any>(`/api/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
+}
 
-export const deleteProduct = (id: string) =>
-  http<void>(`/products/${id}`, { method: "DELETE" });
+export async function deleteProduct(id: string) {
+ 
+  return apiFetch<void>(`/api/products/${id}`, { method: "DELETE" });
+}

@@ -3,3 +3,4 @@
 *.env
 *.rar
 *.zip
+/.env
