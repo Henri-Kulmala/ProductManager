@@ -1,20 +1,21 @@
-const ADMIN_USER = import.meta.env.VITE_ADMIN_USER;
-const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS;
+// src/lib/auth.ts
+import { supabase } from "./supabase";
 
-const TOKEN_KEY = "admin_token";
-
-export function login(username: string, password: string): boolean {
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
-    localStorage.setItem(TOKEN_KEY, "true");
-    return true;
-  }
-  return false;
+export async function login(email: string, password: string): Promise<boolean> {
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  return !error;
 }
 
-export function logout() {
-  localStorage.removeItem(TOKEN_KEY);
+export async function logout(): Promise<void> {
+  await supabase.auth.signOut();
 }
 
-export function isAuthenticated(): boolean {
-  return localStorage.getItem(TOKEN_KEY) === "true";
+export async function getUser() {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user ?? null;
+}
+
+export async function getAccessToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
 }

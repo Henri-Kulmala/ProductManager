@@ -12,13 +12,13 @@ generator client {
 
 model Product {
   id          String   @id @default(cuid())
-  name        String                 // Tuotenimi
-  ingredients String?                // Ainesosat (comma- or newline-separated)
-  allergens   String?                // Allergeenit (comma-separated)
+  name        String                
+  ingredients String?               
+  allergens   String?               
   size        String?
   price       String?
   EAN         String?                
-  photoUrl    String?                // PhotoURL
+  photoUrl    String?               
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

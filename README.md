@@ -96,3 +96,5 @@ Valitsimme **Neon**-tietokantapalvelun, koska se täyttää kaikki projektin vaa
 > Se mahdollistaa PostgreSQL-pohjaisen tietokannan käytön Prisma ORM:n kautta ilman konfiguraatiosotkuja tai rajoituksia, joita muissa palveluissa esiintyi.
 
 ---
+
+
