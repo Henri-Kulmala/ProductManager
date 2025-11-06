@@ -4,7 +4,7 @@ import { supabase } from "./supabase";
 
 const API_URL = import.meta.env.VITE_API_URL!;
 
-// Internal: fetch once with a given token
+
 async function doFetch(path: string, init: RequestInit, token: string) {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
