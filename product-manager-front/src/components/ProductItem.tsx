@@ -4,7 +4,6 @@ import {
   IoIosArrowDropdownCircle,
   IoIosArrowDropupCircle,
 } from "react-icons/io";
-import { FaBarcode } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductItem({ product }: { product: Product }) {
