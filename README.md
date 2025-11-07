@@ -19,7 +19,7 @@
 <summary><strong>Click to expand</strong></summary>
 
 **ProductManager** is a full-stack web application for managing and publishing structured product information.  
-The project was designed as a lightweight and secure admin interface that allows the creation, modification, and deletion of product data stored in a cloud database.
+The project was designed as a lightweight and secure admin interface that allows the creation, modification, and deletion of product data stored in a cloud database. This data is then used to output a list of products for customers to view.
 
 ### Key Features
 - Modern React + Vite **frontend** for a responsive admin panel  
@@ -69,6 +69,7 @@ The system enables small businesses or internal teams to manage product data wit
     ├── components
     ├── lib
 ```
+### Interface snapshots (coming soon)
 
 </details>
 
