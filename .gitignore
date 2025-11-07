@@ -4,3 +4,13 @@
 *.rar
 *.zip
 /.env
+
+/fonts
+
+fonts/
+*/fonts
+*.ttf
+*.woff
+*.woff2
+*.eot
+*.otf
