@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { withCORS, preflight } from "@/lib/cors";
 import { ProductSchema } from "@/lib/validation";
-import { requireUser /*, isAdmin */ } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 
 export function OPTIONS(req: Request) {
   return preflight(req);
 }
 
-// Keep your build-compatible context
+
 type RouteContext = { params: Promise<{ id: string }> };
 
 const ProductUpdateSchema = ProductSchema.partial();
