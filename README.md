@@ -4,7 +4,7 @@
 ## Table of contents
 
 1. [Description](#description)
-2. [Information Security](#information-security)
+2. [Application Security](#application-security)
 3. [Database](#database)
 4. [Code Stack](#code-stack)
 5. [User Manual & Initialization](#user-manual--initialization)
@@ -74,7 +74,7 @@ The system enables small businesses or internal teams to manage product data wit
 
 ---
 
-##  Information Security
+##  Application Security
 <details>
 <summary><strong>Click to expand</strong></summary>
 
