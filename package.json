@@ -1,0 +1,18 @@
+{
+    "name": "product-manager",
+    "private": true,
+    "workspaces": [
+        "product-manager-admin",
+        "product-manager-api",
+        "product-manager-front"
+    ],
+    "scripts": {
+        "dev": "concurrently -n ADMIN,API,FRONT -c cyan,magenta,yellow \"npm:dev:admin\" \"npm:dev:api\" \"npm:dev:front\"",
+        "dev:admin": "npm --workspace product-manager-admin run dev",
+        "dev:api": "npm --workspace product-manager-api run dev",
+        "dev:front": "npm --workspace product-manager-front run dev"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
