@@ -78,22 +78,22 @@ The system enables small businesses or internal teams to manage product data wit
 The admin panel website lets the admin user perform useful functions, such as creating new products, deleting and editing the existing products. These are all then updated onto the product listing page (product-manager-front) visible for the customer.
 
 #### Login page
-![alt](url)
+![alt](https://github.com/Henri-Kulmala/ProductManager/blob/main/snapshots/Login-page.jpg)
 
 #### Landing page
 Here you can see the landing page for the admin panel. 
-![alt](url)
+![alt](https://github.com/Henri-Kulmala/ProductManager/blob/main/snapshots/Tuotehallinta%20etusivu.jpg)
 
 #### Creating a new product
-![alt](url)
+![alt](https://github.com/Henri-Kulmala/ProductManager/blob/main/snapshots/Tuotteen%20lis%C3%A4ys.jpg)
 
 ### Product listing page
 
 #### Landing page
-![alt](url)
+![alt](https://github.com/Henri-Kulmala/ProductManager/blob/main/snapshots/Tuotelistaus.jpg)
 
 #### opened product card
-![alt](url)
+![alt](https://github.com/Henri-Kulmala/ProductManager/blob/main/snapshots/Tuotekortti%20avattuna.jpg)
 
 </details>
 
