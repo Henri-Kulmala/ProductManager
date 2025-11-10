@@ -15,8 +15,7 @@
 ---
 
 ## Description
-<details>
-<summary><strong>Click to expand</strong></summary>
+
 
 **ProductManager** is a full-stack web application for managing and publishing structured product information.  
 The project was designed as a lightweight and secure admin interface that allows the creation, modification, and deletion of product data stored in a cloud database. This data is then used to output a list of products for customers to view.
@@ -97,13 +96,12 @@ Here you can see the landing page for the admin panel.
 
 </details>
 
-</details>
+
 
 ---
 
 ##  Application Security
-<details>
-<summary><strong>Click to expand</strong></summary>
+
 
 The project emphasizes security both at the application and infrastructure level.
 
@@ -133,13 +131,12 @@ NODE_ENV=production
 - Supabase tokens and Prisma connections are stored only in secure server memory.
 - No personal data or payment data is stored in this application — only product metadata.
 
-</details>
+
 
 ---
 
 ##  Database
-<details>
-<summary><strong>Click to expand</strong></summary>
+
 
 ### Chosen Service: **Neon (PostgreSQL)**
 
@@ -173,13 +170,12 @@ model Product {
 }
 ```
 
-</details>
+
 
 ---
 
 ##  Code Stack
-<details>
-<summary><strong>Click to expand</strong></summary>
+
 
 ### Code stack and services used in the project
 
@@ -211,13 +207,12 @@ model Product {
 | Database | **Neon (PostgreSQL)** | SSL-secured free tier |
 | Auth | **Supabase** | Password-based email login |
 
-</details>
+
 
 ---
 
 ##  User Manual & Initialization
-<details>
-<summary><strong>Click to expand</strong></summary>
+
 
 ### 1. Clone and install
 ```bash
@@ -271,7 +266,7 @@ npm run build
 - Manage products: *Add*, *Edit*, *Delete*, *Search*.  
 - Data syncs automatically with the Neon database via the Render API.
 
-</details>
+
 
 ---
 
