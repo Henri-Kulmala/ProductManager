@@ -68,7 +68,9 @@ The system enables small businesses or internal teams to manage product data wit
     ├── components
     ├── lib
 ```
-### Interface snapshots (coming soon)
+
+
+###  📷 Interface snapshots 
 
 <details>
 <summary><strong>View snapshots</strong></summary> 
