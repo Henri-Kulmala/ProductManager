@@ -71,6 +71,32 @@ The system enables small businesses or internal teams to manage product data wit
 ```
 ### Interface snapshots (coming soon)
 
+<details>
+<summary><strong>View snapshots</strong></summary> 
+
+### Admin panel (product-manager-admin)
+The admin panel website lets the admin user perform useful functions, such as creating new products, deleting and editing the existing products. These are all then updated onto the product listing page (product-manager-front) visible for the customer.
+
+#### Login page
+![alt](url)
+
+#### Landing page
+Here you can see the landing page for the admin panel. 
+![alt](url)
+
+#### Creating a new product
+![alt](url)
+
+### Product listing page
+
+#### Landing page
+![alt](url)
+
+#### opened product card
+![alt](url)
+
+</details>
+
 </details>
 
 ---
