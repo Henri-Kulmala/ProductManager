@@ -9,7 +9,7 @@ import {
 import type { Product } from "./types";
 import ProductForm from "./components/ProductForm";
 import ProductsTable from "./components/ProductsTable";
-
+import BulkImport from "./components/BulkImport";
 
 export default function App() {
   const qc = useQueryClient();
@@ -19,8 +19,7 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-
-  const { data, isFetching  } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["products", { search, cursor }],
     queryFn: () =>
       listProducts({
@@ -67,7 +66,6 @@ export default function App() {
     },
   });
 
-
   function toggleSelect(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -78,11 +76,10 @@ export default function App() {
 
   function toggleAll(checked: boolean) {
     setSelected(() => {
-      if (!checked) return new Set(); 
-      return new Set(items.map((i) => i.id)); 
+      if (!checked) return new Set();
+      return new Set(items.map((i) => i.id));
     });
   }
-
 
   return (
     <div className="wrap">
@@ -124,6 +121,16 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      <BulkImport
+        apiBase="http://localhost:3000"
+        onImported={() => {
+          setCursor(null);
+          setSelected(new Set());
+
+          qc.invalidateQueries({ queryKey: ["products"] });
+        }}
+      />
 
       {showForm && (
         <div className="card">
@@ -169,7 +176,7 @@ function ListArea(props: {
   onNext: () => void;
   onEdit: (p: Product) => void;
   selected: Set<string>;
-  onToggle: (id: string) => void; 
+  onToggle: (id: string) => void;
   onToggleAll: (checked: boolean) => void;
 }) {
   return (
