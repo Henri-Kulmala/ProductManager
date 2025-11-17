@@ -66,6 +66,10 @@ export async function PUT(req: Request, context: RouteContext) {
         ...("size" in parsed.data ? { size: parsed.data.size ?? null } : {}),
         ...("price" in parsed.data ? { price: parsed.data.price ?? null } : {}),
         ...("EAN" in parsed.data ? { EAN: parsed.data.EAN ?? null } : {}),
+        ...("producer" in parsed.data ? { producer: parsed.data.producer ?? null } : {}),
+        ...("producedIn" in parsed.data ? { producedIn: parsed.data.producedIn ?? null } : {}),
+        ...("ECodes" in parsed.data ? { ECodes: parsed.data.ECodes ?? null } : {}),
+        ...("preservation" in parsed.data ? { preservation: parsed.data.preservation ?? null } : {}),
       },
     });
     return withCORS(Response.json(updated), req);

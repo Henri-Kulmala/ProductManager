@@ -50,7 +50,10 @@ export default function ProductsTable({
             <th>EAN</th>
             <th>Ainesosat</th>
             <th>Päivitetty</th>
-            <th></th>
+            <th>Valmistusmaa</th>
+            <th>Valmistaja</th>
+            <th>E-Koodit</th>
+            <th>Säilytys</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +72,10 @@ export default function ProductsTable({
                 {p.ingredients ?? <span style={{ opacity: 0.5 }}>–</span>}
               </td>
               <td>{new Date(p.updatedAt).toLocaleDateString("fi-FI")}</td>
+              <td>{p.producedIn ?? "-"}</td>
+              <td>{p.producer ?? "-"}</td>
+              <td>{p.ECodes ?? "-"}</td>
+              <td>{p.preservation ?? "-"}</td>
               <td>
                 <button className="btn-edit" onClick={() => onEdit(p)}>
                   Muokkaa

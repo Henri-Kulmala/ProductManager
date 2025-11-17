@@ -11,17 +11,23 @@ generator client {
 
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String                
-  ingredients String?               
-  allergens   String?               
-  size        String?
-  price       String?
-  EAN         String?                
-  photoUrl    String?               
+  id            String   @id @default(cuid())
+  name          String                
+  ingredients   String?               
+  allergens     String?               
+  size          String?
+  price         String?
+  EAN           String?                
+  photoUrl      String?        
+  producer      String?
+  producedIn    String?
+  ECodes        String?
+  preservation  String?       
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+
 
   @@index([name])
 }

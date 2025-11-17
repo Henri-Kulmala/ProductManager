@@ -27,6 +27,23 @@ export const ProductSchema = z.object({
     .string() 
     .optional()
     .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  producer: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  producedIn: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  ECodes: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  preservation: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+    
 });
 
 export type ProductInput = z.infer<typeof ProductSchema>;

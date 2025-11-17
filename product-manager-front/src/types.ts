@@ -9,4 +9,8 @@ export type Product = {
   updatedAt?: string;
   price?: string | null;
   EAN?: string | null;
+  producer?: string | null;
+  producedIn?: string | null;
+  ECodes?: string | null;
+  preservation?: string | null;
 };

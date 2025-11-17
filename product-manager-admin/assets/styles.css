@@ -36,6 +36,16 @@ button {
     user-select: none;
 }
 
+input[type="file"] {
+    display: none;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--secondary-text)
+}
+    
+
+
 .wrap {
     max-width: 1000px;
     margin: 32px auto;
@@ -223,10 +233,20 @@ button {
     border-radius: 10px;
 }
 
+.table-wrap {
+    overflow-x: auto;
+    padding: 2rem 0;
+}
+
+.scrollable {
+    overflow: auto;
+}
+
 .tbl {
     width: 100%;
     border-collapse: collapse;
     min-width: 700px;
+    overflow: auto;
 }
 
 .tbl th {
@@ -283,6 +303,12 @@ button {
     color: #fff;
 }
 
+.card-header{
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--primary-text);
+}
 
 .login-container {
     display: flex;
@@ -360,3 +386,22 @@ button {
     margin-bottom: 16px;
     user-select: none;
 }
+
+
+.file-input {
+    background: var(--bg-blue);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--secondary-text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    user-select: none;
+}
+
+.label-icon {
+    margin-right: 8px;
+}
+
+

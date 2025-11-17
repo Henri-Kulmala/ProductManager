@@ -29,6 +29,10 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
       photoUrl: initial?.photoUrl ?? "",
       price: initial?.price ?? "",
       EAN: initial?.EAN ?? "",
+      producer: initial?.producer ?? "",
+      producedIn: initial?.producedIn ?? "",
+      ECodes: initial?.ECodes ?? "",
+      preservation: initial?.preservation ?? "",
     });
   }, [initial, reset]);
 

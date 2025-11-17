@@ -9,6 +9,7 @@ export function OPTIONS(req: Request) {
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const search = url.searchParams.get("search")?.trim() || "";
+  const ean = url.searchParams.get("ean")?.trim();
   const limit = Math.min(
     parseInt(url.searchParams.get("limit") || "50", 10),
     100
@@ -20,6 +21,8 @@ export async function GET(req: Request) {
     where.OR = [
       { name: { contains: search } },
       { ingredients: { contains: search } },
+      { allergens: { contains: search } },
+      { EAN: { contains: search } },
     ];
 
   const items = await prisma.product.findMany({
@@ -28,6 +31,7 @@ export async function GET(req: Request) {
     take: limit + 1,
     ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
   });
+  
   const nextCursor = items.length > limit ? items.pop()!.id : null;
   return withCORS(Response.json({ items, nextCursor }), req);
 }
@@ -50,6 +54,10 @@ export async function POST(req: Request) {
       size: parsed.data.size ?? null,
       price: parsed.data.price ?? null,
       EAN: parsed.data.EAN ?? null,
+      producer: parsed.data.producer ?? null,
+      producedIn: parsed.data.producedIn ?? null,
+      ECodes: parsed.data.ECodes ?? null,
+      preservation: parsed.data.preservation ?? null,
     },
   });
   return withCORS(Response.json(created, { status: 201 }), req);
