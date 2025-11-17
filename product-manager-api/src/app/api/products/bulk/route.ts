@@ -49,6 +49,10 @@ export async function POST(req: Request) {
             photoUrl: p.photoUrl,
             price: p.price,
             EAN: p.EAN || existing.EAN,
+            producer: p.producer,
+            producedIn: p.producedIn,
+            ECodes: p.ECodes,
+            preservation: p.preservation,
           },
         });
         results.push(updated);
@@ -62,6 +66,10 @@ export async function POST(req: Request) {
             photoUrl: p.photoUrl,
             price: p.price,
             EAN: p.EAN || null,
+            producer: p.producer,
+            producedIn: p.producedIn,
+            ECodes: p.ECodes,
+            preservation: p.preservation,
           },
         });
         results.push(created);

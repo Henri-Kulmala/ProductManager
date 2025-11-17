@@ -61,11 +61,13 @@ export async function listProducts(params: {
   search?: string;
   limit?: number;
   cursor?: string;
+  ean?: string;
 }) {
   const qs = new URLSearchParams();
   if (params.search) qs.set("search", params.search);
   if (params.limit) qs.set("limit", String(params.limit));
   if (params.cursor) qs.set("cursor", params.cursor);
+  if (params.ean) qs.set("ean", params.ean);
   const q = qs.toString();
   return apiFetch<ListResponse<any>>(`/api/products${q ? `?${q}` : ""}`);
 }

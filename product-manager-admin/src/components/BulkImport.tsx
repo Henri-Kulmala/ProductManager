@@ -1,7 +1,7 @@
 // components/BulkImport.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import Papa from "papaparse";
 import { z } from "zod";
 import type { ProductInput } from "../lib/validation";
@@ -12,6 +12,7 @@ import {
   toNormalizedRecord,
 } from "../lib/csv-utils";
 import { mapWooFiNormalizedToProductInput } from "../lib/mapping";
+import { FaFileDownload } from "react-icons/fa";
 
 const BulkPayloadSchema = z.array(
   z.object({
@@ -22,28 +23,48 @@ const BulkPayloadSchema = z.array(
     photoUrl: z.string().optional().default(""),
     price: z.string().min(1, "Missing price"),
     EAN: z.string().optional().default(""),
+    producer: z.string().optional().default(""),
+    producedIn: z.string().optional().default(""),
+    ECodes: z.string().optional().default(""),
+    preservation: z.string().optional().default(""),
   })
 );
 
 type Props = {
-  /** Prefer passing this in from your app config */
-  apiBase?: string; // e.g. http://localhost:3000  or  https://api.example.com
+  apiBase?: string; 
   onImported?: () => void;
 };
 
 export default function BulkImport({ apiBase, onImported }: Props) {
   const [rows, setRows] = useState<ProductInput[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
   const [errors, setErrors] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [detected, setDetected] = useState<"," | ";" | null>(null);
   const [headers, setHeaders] = useState<string[] | null>(null);
-  
+
   const validCount = useMemo(() => rows.length, [rows]);
+  const selectedCount = useMemo(() => selected.size, [selected]);
+
+  const allChecked = useMemo(
+    () => rows.length > 0 && rows.every((_, i) => selected.has(i)),
+    [rows, selected]
+  );
+  const someChecked = useMemo(
+    () => selected.size > 0 && !allChecked,
+    [selected.size, allChecked]
+  );
+
+  const masterRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (masterRef.current) masterRef.current.indeterminate = someChecked;
+  }, [someChecked]);
 
   async function handleFile(file: File) {
     setFileName(file.name);
     setRows([]);
+    setSelected(new Set());
     setErrors([]);
     setHeaders(null);
     setDetected(null);
@@ -74,6 +95,7 @@ export default function BulkImport({ apiBase, onImported }: Props) {
             setErrors((prev) => [...prev, ...issues]);
           } else {
             setRows(parsed.data);
+            setSelected(new Set(parsed.data.map((_, idx) => idx)));
           }
         } catch (e: any) {
           setErrors((prev) => [...prev, e?.message ?? "CSV parse error"]);
@@ -82,18 +104,39 @@ export default function BulkImport({ apiBase, onImported }: Props) {
     });
   }
 
+  function toggleRow(idx: number) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(idx) ? next.delete(idx) : next.add(idx);
+      return next;
+    });
+  }
+
+  function toggleAll(checked: boolean) {
+    if (!rows.length) return;
+    setSelected(() => {
+      if (!checked) return new Set();
+      return new Set(rows.map((_, idx) => idx));
+    });
+  }
+
   async function submit() {
     setSubmitting(true);
     setErrors([]);
     try {
-      const individuallyChecked = rows.map((r) => {
+
+      const selectedRows = rows.filter((_, idx) => selected.has(idx));
+      if (selectedRows.length === 0) {
+        throw new Error("Valitse vähintään yksi tuotteen rivi tuotavaksi.");
+      }
+
+      const individuallyChecked = selectedRows.map((r) => {
         const p = ProductSchema.safeParse(r);
         if (!p.success)
           throw new Error(p.error.issues.map((i) => i.message).join(", "));
         return p.data;
       });
 
-      // ✅ Vite-style env (compile-time replacement)
       const viteUrl = (import.meta as any)?.env?.VITE_API_URL as
         | string
         | undefined;
@@ -119,6 +162,7 @@ export default function BulkImport({ apiBase, onImported }: Props) {
 
       onImported?.();
       setRows([]);
+      setSelected(new Set());
       setFileName(null);
     } catch (e: any) {
       setErrors((prev) => [...prev, e?.message ?? "Bulk import failed"]);
@@ -135,6 +179,7 @@ export default function BulkImport({ apiBase, onImported }: Props) {
 
       <div className="card-body">
         <label className="file-input">
+          <FaFileDownload className="label-icon"/>
           <input
             type="file"
             accept=".csv,text/csv"
@@ -143,25 +188,16 @@ export default function BulkImport({ apiBase, onImported }: Props) {
               if (f) handleFile(f);
             }}
           />
-          <span>{fileName ?? "Valitse CSV-tiedosto"}</span>
+          <span id="file-view-text">{fileName ?? "Tuo CSV-tiedosto"}</span>
         </label>
 
-        {!!detected && (
-          <p className="muted">
-            Havaittu erotin:{" "}
-            {detected === ";" ? "puolipiste (;)" : "pilkku (,)"}
-          </p>
-        )}
+        {!!detected && <p className="muted"></p>}
 
-        {!!headers && (
-          <p className="muted">
-            
-          </p>
-        )}
+        {!!headers && <p className="muted"></p>}
 
         {!!errors.length && (
           <div className="alert alert-error" role="alert">
-            <div className="alert-title">Import errors</div>
+            <div className="alert-title">Tuontivirheet</div>
             <ul>
               {errors.map((e, i) => (
                 <li key={i}>{e}</li>
@@ -172,41 +208,67 @@ export default function BulkImport({ apiBase, onImported }: Props) {
 
         {!!rows.length && (
           <>
-            <p className="muted">Parsed {validCount} row(s).</p>
             <div className="table-wrap">
-              <table className="table">
+              <p className="muted">Valittuna: {selectedCount} tuotetta.</p>
+              <table className="tbl">
                 <thead>
                   <tr>
+                    <th>
+                      <input
+                        ref={masterRef}
+                        type="checkbox"
+                        checked={allChecked}
+                        onChange={(e) => toggleAll(e.currentTarget.checked)}
+                        aria-checked={someChecked ? "mixed" : allChecked}
+                      />
+                    </th>
                     <th>Nimi</th>
                     <th>Koko</th>
                     <th>Hinta</th>
                     <th>EAN</th>
                     <th>Kuva</th>
+                    <th>Valmistaja</th>
+                    <th>Valmistusmaa</th>
+                    <th>E-Koodit</th>
+                    <th>Säilytys</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {rows.slice(0, 12).map((r, i) => (
+                <tbody >
+                  {rows.slice(0, 50).map((r, i) => (
                     <tr key={i}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selected.has(i)}
+                          onChange={() => toggleRow(i)}
+                        />
+                      </td>
                       <td>{r.name}</td>
                       <td>{r.size}</td>
                       <td>{r.price}</td>
                       <td>{r.EAN}</td>
                       <td>{r.photoUrl ? "✓" : ""}</td>
+                      <td>{r.producer ?? ""}</td>
+                      <td>{r.producedIn ?? ""}</td>
+                      <td>{r.ECodes ?? ""}</td>
+                      <td>{r.preservation ?? ""}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            {rows.length > 12 && (
-              <p className="muted">…and {rows.length - 12} more</p>
+            {rows.length > 50 && (
+              <p className="muted">…ja {rows.length - 50} riviä lisää</p>
             )}
 
             <div className="actions">
               <button
                 className="btn-primary"
                 onClick={submit}
-                disabled={submitting}>
-                {submitting ? "Importing…" : "Import all"}
+                disabled={submitting || selectedCount === 0}>
+                {submitting
+                  ? "Tuodaan valitut…"
+                  : `Tuo valitut (${selectedCount})`}
               </button>
             </div>
           </>

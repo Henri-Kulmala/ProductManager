@@ -15,13 +15,18 @@ export default function ProductItem({ product }: { product: Product }) {
       onClick={() => setOpen((v) => !v)}>
       <div className="product-header">
         <div>
+          {product.photoUrl && (
+            <img src={product.photoUrl ?? ""} className="product-image" />
+          )}
+
           <h3 className="label-name">{product.name}</h3>
-          
-          {product.size && <span className="span-label">{product.EAN}</span>}
+
+          {product.EAN && <span className="span-label">{product.EAN}</span>}
           {product.size && <span className="span-label">{product.size}</span>}
           {product.price && (
             <span className="span-label">{product.price} €</span>
           )}
+          
         </div>
         <button className="toggle-btn" aria-label="Toggle details">
           {open ? <IoIosArrowDropupCircle /> : <IoIosArrowDropdownCircle />}
@@ -67,6 +72,30 @@ export default function ProductItem({ product }: { product: Product }) {
               {product.EAN && (
                 <p className="label">
                   <strong className="secondary-text">EAN:</strong> {product.EAN}
+                </p>
+              )}
+              {product.producer && (
+                <p className="label">
+                  <strong className="secondary-text">Valmistaja:</strong>{" "}
+                  {product.producer}
+                </p>
+              )}
+              {product.producedIn && (
+                <p className="label">
+                  <strong className="secondary-text">Alkuperämaa:</strong>{" "}
+                  {product.producedIn}
+                </p>
+              )}
+              {product.preservation && (
+                <p className="label">
+                  <strong className="secondary-text">Säilytys:</strong>{" "}
+                  {product.preservation}
+                </p>
+              )}
+              {product.ECodes && (
+                <p className="label">
+                  <strong className="secondary-text">E-Koodit:</strong>{" "}
+                  {product.ECodes}
                 </p>
               )}
             </motion.div>
