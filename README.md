@@ -30,45 +30,6 @@ The project was designed as a lightweight and secure admin interface that allows
 
 The system enables small businesses or internal teams to manage product data without needing a full CMS (content management system).
 
-### Project root directory (unfinished)
-
-```
-├── product-manager-admin
-  ├── src
-    ├── assets
-      ├── fonts
-    ├── components
-      ├── ProductForm.tsx
-      ├── ProductsTable.tsx
-    ├── lib
-      ├── api.ts
-      ├── auth.ts
-      ├── supabase.ts
-      ├── validation.ts
-    ├── App.tsx
-    ├── index.css
-    ├── main.tsx
-    ├── MainApp.tsx
-    ├── types.ts
-
-├── product-manager-api
-  ├── lib
-  ├── prisma
-    ├── migrations
-      ├── 20251029141613_init
-  ├── src
-    ├── app
-      ├── api
-├── product-manager-front
-  ├── public
-  ├── src
-    ├── assets
-      ├── fonts
-      ├── Logos
-    ├── components
-    ├── lib
-```
-
 
 ###  📷 Interface snapshots 
 
