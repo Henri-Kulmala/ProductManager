@@ -10,6 +10,8 @@ import type { Product } from "./types";
 import ProductForm from "./components/ProductForm";
 import ProductsTable from "./components/ProductsTable";
 import BulkImport from "./components/BulkImport";
+import { FaTrashAlt } from "react-icons/fa";
+import { IoMdAddCircle } from "react-icons/io";
 
 export default function App() {
   const qc = useQueryClient();
@@ -18,6 +20,8 @@ export default function App() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  
 
   const { data, isFetching } = useQuery({
     queryKey: ["products", { search, cursor }],
@@ -96,41 +100,55 @@ export default function App() {
           </div>
 
           <div className="form-actions">
-            <button
-              className="btn-accent"
-              onClick={() => {
-                setEditing(null);
-                setShowForm(true);
-              }}>
-              + Uusi tuote
-            </button>
+            <div className="btn-rm-wrapper">
+              <IoMdAddCircle
+                className="btn-add"
+                onClick={() => {
+                  setEditing(null);
+                  setShowForm(true);
+                }}
+              />
+            </div>
 
-            <button
-              className="btn-danger-outline"
-              disabled={selected.size === 0 || deleteMut.isPending}
-              onClick={() => {
-                const confirmDelete = window.confirm(
-                  "Haluatko varmasti poistaa valitut tuotteet?"
-                );
-                if (confirmDelete) {
-                  deleteMut.mutate(Array.from(selected));
-                }
-              }}>
-              Poista valitut ({selected.size})
-            </button>
+            <div className="btn-rm-wrapper">
+              <FaTrashAlt
+                className="btn-rm"
+                onClick={() => {
+                  const confirmDelete = window.confirm(
+                    "Haluatko varmasti poistaa valitut tuotteet?"
+                  );
+                  if (confirmDelete) {
+                    deleteMut.mutate(Array.from(selected));
+                  }
+                }}
+              />{" "}
+              ({selected.size})
+            </div>
           </div>
         </div>
       </header>
 
-      <BulkImport
-        apiBase="http://localhost:3000"
-        onImported={() => {
-          setCursor(null);
-          setSelected(new Set());
+      <button
+        className="btn-primary"
+        type="button"
+        onClick={() => setShowBulkImport((v) => !v)}>
+        {showBulkImport ? "Peruuta" : "Tuo tuotteita CSV:stä"}
+      </button>
 
-          qc.invalidateQueries({ queryKey: ["products"] });
-        }}
-      />
+      {showBulkImport && (
+        <BulkImport
+          apiBase={import.meta.env.VITE_API_URL}
+          onImported={() => {
+            setCursor(null);
+            setSelected(new Set());
+            qc.invalidateQueries({ queryKey: ["products"] });
+            setShowBulkImport(false); // auto-hide after successful import
+          }}
+          onClose={() => {
+            setShowBulkImport(false); // hide when user clicks "Peruuta"
+          }}
+        />
+      )}
 
       {showForm && (
         <div className="card">
