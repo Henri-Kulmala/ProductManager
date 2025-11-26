@@ -14,6 +14,7 @@ import {
 import { mapWooFiNormalizedToProductInput } from "../lib/mapping";
 import { FaFileDownload } from "react-icons/fa";
 
+
 const BulkPayloadSchema = z.array(
   z.object({
     name: z.string().min(1, "Missing name"),
@@ -31,11 +32,12 @@ const BulkPayloadSchema = z.array(
 );
 
 type Props = {
-  apiBase?: string; 
+  apiBase?: string;
   onImported?: () => void;
+  onClose?: () => void;
 };
 
-export default function BulkImport({ apiBase, onImported }: Props) {
+export default function BulkImport({ apiBase, onImported, onClose }: Props) {
   const [rows, setRows] = useState<ProductInput[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [errors, setErrors] = useState<string[]>([]);
@@ -44,7 +46,6 @@ export default function BulkImport({ apiBase, onImported }: Props) {
   const [detected, setDetected] = useState<"," | ";" | null>(null);
   const [headers, setHeaders] = useState<string[] | null>(null);
 
-  const validCount = useMemo(() => rows.length, [rows]);
   const selectedCount = useMemo(() => selected.size, [selected]);
 
   const allChecked = useMemo(
@@ -56,19 +57,28 @@ export default function BulkImport({ apiBase, onImported }: Props) {
     [selected.size, allChecked]
   );
 
+  
+  
+
   const masterRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (masterRef.current) masterRef.current.indeterminate = someChecked;
   }, [someChecked]);
+  
+   function resetState() {
+     setRows([]);
+     setSelected(new Set());
+     setErrors([]);
+     setHeaders(null);
+     setDetected(null);
+     setFileName(null);
+   }
 
   async function handleFile(file: File) {
-    setFileName(file.name);
-    setRows([]);
-    setSelected(new Set());
-    setErrors([]);
-    setHeaders(null);
-    setDetected(null);
+    resetState();
 
+
+    setFileName(file.name);
     const text = await file.text();
     const delimiter = detectDelimiter(text);
     setDetected(delimiter);
@@ -124,7 +134,6 @@ export default function BulkImport({ apiBase, onImported }: Props) {
     setSubmitting(true);
     setErrors([]);
     try {
-
       const selectedRows = rows.filter((_, idx) => selected.has(idx));
       if (selectedRows.length === 0) {
         throw new Error("Valitse vähintään yksi tuotteen rivi tuotavaksi.");
@@ -179,7 +188,7 @@ export default function BulkImport({ apiBase, onImported }: Props) {
 
       <div className="card-body">
         <label className="file-input">
-          <FaFileDownload className="label-icon"/>
+          <FaFileDownload className="label-icon" />
           <input
             type="file"
             accept=".csv,text/csv"
@@ -233,7 +242,7 @@ export default function BulkImport({ apiBase, onImported }: Props) {
                     <th>Säilytys</th>
                   </tr>
                 </thead>
-                <tbody >
+                <tbody>
                   {rows.slice(0, 50).map((r, i) => (
                     <tr key={i}>
                       <td>
@@ -261,9 +270,20 @@ export default function BulkImport({ apiBase, onImported }: Props) {
               <p className="muted">…ja {rows.length - 50} riviä lisää</p>
             )}
 
-            <div className="actions">
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn-secondary" 
+                onClick={() => {
+                  resetState(); 
+                  onClose?.(); 
+                }}>
+                Peruuta
+              </button>
+
               <button
                 className="btn-primary"
+                type="button"
                 onClick={submit}
                 disabled={submitting || selectedCount === 0}>
                 {submitting

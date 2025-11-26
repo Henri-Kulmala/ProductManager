@@ -17,6 +17,7 @@
     --secondary-text: #f58320;
     --bg-blue: #1f3063;
     --font-primary: "Skatta", sans-serif;
+    --danger: #ff7a7a;
 }
 
 html,
@@ -31,6 +32,33 @@ body {
 * {
     box-sizing: border-box;
 }
+
+/* Scrollbar */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+    
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #cecece;
+    border-radius: 3px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #707070 ;
+    border-radius: 3px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ec9e59;
+    cursor: pointer;
+    transition: 400ms ease-in-out;
+}
+
 
 button {
     user-select: none;
@@ -90,6 +118,48 @@ input[type="checkbox"] {
     background: #151820;
     outline: none;
 }
+.btn-add {
+    background: var(--secondary-text);
+    border: none;
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 30px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-add:hover {
+    background-color: #b36520;
+}
+
+.btn-rm-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+}
+
+.btn-rm {
+    background: transparent;
+    border: 1px solid var(--danger);
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 30px;
+    color: var(--danger);
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-rm:hover {
+    background-color: var(--danger);
+    color: var(--text);
+}
+
 
 .btn-accent {
     background: var(--secondary-text);
@@ -186,11 +256,11 @@ input[type="checkbox"] {
 }
 
 .form-actions {
-    grid-column: 1 / -1;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
     gap: 12px;
-    margin-top: 10px;
+    margin-top: 1rem;
 }
 
 .btn-primary {
@@ -205,7 +275,7 @@ input[type="checkbox"] {
 }
 
 .btn-primary:hover {
-    background: #ff8e2b;
+    background: #a35a1b;
 }
 
 .btn-secondary {
@@ -231,11 +301,13 @@ input[type="checkbox"] {
 .table-wrapper {
     overflow-x: auto;
     border-radius: 10px;
+    padding-bottom: 3rem;
 }
 
 .table-wrap {
     overflow-x: auto;
     padding: 2rem 0;
+    padding-bottom: 2rem;
 }
 
 .scrollable {
@@ -288,12 +360,12 @@ input[type="checkbox"] {
 }
 
 .btn-edit {
-    background: transparent;
+    background: var(--secondary-text);
     border: 1px solid var(--secondary-text);
-    color: var(--secondary-text);
+    color: var(--text);
     border-radius: 6px;
-    padding: 4px 10px;
-    font-size: 13px;
+    padding: 0.25rem;
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -389,15 +461,18 @@ input[type="checkbox"] {
 
 
 .file-input {
-    background: var(--bg-blue);
+    background: var(--secondary-text);
     border: none;
     border-radius: 8px;
     padding: 10px 16px;
-    color: var(--secondary-text);
+    color: var(--text);
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s ease;
     user-select: none;
+}
+.file-input:hover {
+    background: #b16727;
 }
 
 .label-icon {

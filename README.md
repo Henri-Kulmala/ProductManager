@@ -121,15 +121,22 @@ The database is hosted on **[Neon.tech](https://neon.tech)** — a managed Postg
 ### Example Model
 ```prisma
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  ingredients String?
-  allergens   String?
-  photoUrl    String?
-  size        String?
-  price       Float?
-  EAN         String?
+  id            String   @id @default(cuid())
+  name          String                
+  ingredients   String?               
+  allergens     String?               
+  size          String?
+  price         String?
+  EAN           String?                
+  photoUrl      String?        
+  producer      String?
+  producedIn    String?
+  ECodes        String?
+  preservation  String?       
+
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
 }
 ```
 

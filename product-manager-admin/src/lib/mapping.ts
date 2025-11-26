@@ -1,14 +1,7 @@
 // lib/mapping.ts
 import {
   firstCommaItem,
-  looksLikeSize,
   normalizePriceString,
-  looksLikeIngredients,
-  looksLikeAllergens,
-  looksLikeProducer,
-  looksLikeProducedIn,
-  looksLikeECodes,
-  looksLikePreservation,
   cleanAttributeValue,
 } from "./csv-utils";
 
@@ -16,37 +9,12 @@ export type NormalizedRow = Record<string, string | undefined>;
 
 const get = (r: NormalizedRow, key: string) => (r[key] ?? "").trim();
 
-// WooCommerce export has "Ominaisuus 1–6 nimi/arvo(t)"
-const ATTRIBUTE_INDICES = [1, 2, 3, 4, 5, 6] as const;
-
-/**
- * Find the first attribute (1–6) whose name matches the predicate.
- * Optionally run a transform on the value (e.g. firstCommaItem).
- */
-function pickAttributeValue(
-  r: NormalizedRow,
-  predicate: (name: string | undefined) => boolean,
-  transform?: (value: string) => string
-): string {
-  for (const idx of ATTRIBUTE_INDICES) {
-    const nameKey = `ominaisuus ${idx} nimi`;
-    const valueKey = `ominaisuus ${idx} arvo(t)`;
-
-    const attrName = r[nameKey];
-    const rawValue = r[valueKey];
-
-    if (!predicate(attrName) || !rawValue) continue;
-
-    const v = String(rawValue).trim();
-    if (!v) continue;
-
-    return transform ? transform(v) : v;
-  }
-  return "";
-}
+// Helper to read ACF meta columns like "Metatieto: ainesosat"
+// After normalizeHeader, the key is "metatieto: ainesosat"
+const meta = (r: NormalizedRow, field: string) => get(r, `metatieto: ${field}`);
 
 export function mapWooFiNormalizedToProductInput(r: NormalizedRow) {
-  // Basic fields from normal Woo columns
+  // Basic Woo fields
   const name = get(r, "nimi");
 
   const discounted = get(r, "alennettu hinta");
@@ -56,40 +24,45 @@ export function mapWooFiNormalizedToProductInput(r: NormalizedRow) {
   const images = get(r, "kuvat");
   const photoUrl = firstCommaItem(images);
 
-  // Primary EAN from main Woo column
+  // Primary EAN from core Woo column
   let ean = get(r, "gtin, upc, ean, or isbn");
 
-  // Fallback: if not present, look for attribute whose name is literally "EAN"
+  // Fallback EAN from ACF meta
   if (!ean) {
-    ean = pickAttributeValue(
-      r,
-      (attrName) => (attrName ?? "").toLowerCase() === "ean",
-      firstCommaItem
-    );
+    const metaEAN = meta(r, "ean");
+    if (metaEAN) {
+      ean = firstCommaItem(metaEAN);
+    }
   }
 
-  // Size from any attribute where name looks like "koko/annoskoko/tuotekoko"
-  const size = pickAttributeValue(r, looksLikeSize, firstCommaItem);
+  // ACF meta fields (names from your CSV header)
+  // Metatieto: annoskoko
+  const sizeRaw = meta(r, "annoskoko");
+  const size = sizeRaw ? firstCommaItem(sizeRaw) : "";
 
-  // Ingredients from any attribute where name looks like "Ainesosat"
-  // (in your sample CSV this is "Ominaisuus 1 nimi" = "Ainesosat")
-  const ingredients = pickAttributeValue(r, looksLikeIngredients, cleanAttributeValue);
+  // Metatieto: ainesosat
+  const ingredientsRaw = meta(r, "ainesosat");
+  const ingredients = cleanAttributeValue(ingredientsRaw);
 
-  // Optional: allergens if you later add an attribute like "Allergeenit"
-  const allergens = pickAttributeValue(r, looksLikeAllergens, cleanAttributeValue);
+  // You don’t currently have a dedicated allergens meta field in the CSV,
+  // so we keep this empty for now (or derive from ingredients later if needed)
+  const allergens = "";
 
-  // Producer from any attribute where name looks like producer
-  const producer = pickAttributeValue(r, looksLikeProducer, cleanAttributeValue);
+  // Metatieto: valmistaja
+  const producerRaw = meta(r, "valmistaja");
+  const producer = cleanAttributeValue(producerRaw);
 
+  // Metatieto: alkuperamaa
+  const producedInRaw = meta(r, "alkuperamaa");
+  const producedIn = cleanAttributeValue(producedInRaw);
 
-  // Produced in from any attribute where name looks like produced in
-  const producedIn = pickAttributeValue(r, looksLikeProducedIn, cleanAttributeValue);
+  // Metatieto: e-koodit
+  const eCodesRaw = meta(r, "e-koodit");
+  const ECodes = cleanAttributeValue(eCodesRaw);
 
-  // E-codes from any attribute where name looks like E-codes
-  const ECodes = pickAttributeValue(r, looksLikeECodes, cleanAttributeValue);
-
-  // Preservation from any attribute where name looks like preservation
-  const preservation = pickAttributeValue(r, looksLikePreservation, cleanAttributeValue);
+  // Metatieto: sailytys
+  const preservationRaw = meta(r, "sailytys");
+  const preservation = cleanAttributeValue(preservationRaw);
 
   return {
     name,
@@ -99,7 +72,7 @@ export function mapWooFiNormalizedToProductInput(r: NormalizedRow) {
     photoUrl,
     price,
     EAN: ean,
-    producer: producer,
+    producer,
     producedIn,
     ECodes,
     preservation,

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
+import { MdEdit } from "react-icons/md";
 
 import type { Product } from "../types";
 
@@ -46,6 +47,7 @@ export default function ProductsTable({
                 aria-checked={someChecked ? "mixed" : allChecked}
               />
             </th>
+            <th></th>
             <th>Tuotenimi</th>
             <th>EAN</th>
             <th>Ainesosat</th>
@@ -66,6 +68,11 @@ export default function ProductsTable({
                   onChange={() => onToggle(p.id)}
                 />
               </td>
+              <td>
+                <button className="btn-edit" onClick={() => onEdit(p)}>
+                  <MdEdit />
+                </button>
+              </td>
               <td className="product-name">{p.name}</td>
               <td>{p.EAN ?? "-"}</td>
               <td className="truncate">
@@ -76,11 +83,6 @@ export default function ProductsTable({
               <td>{p.producer ?? "-"}</td>
               <td>{p.ECodes ?? "-"}</td>
               <td>{p.preservation ?? "-"}</td>
-              <td>
-                <button className="btn-edit" onClick={() => onEdit(p)}>
-                  Muokkaa
-                </button>
-              </td>
             </tr>
           ))}
           {items.length === 0 && (
