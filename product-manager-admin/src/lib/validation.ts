@@ -11,5 +11,12 @@ export const ProductSchema = z.object({
   producedIn: z.string().optional(),
   ECodes: z.string().optional(),
   preservation: z.string().optional(),
+  energia: z.string().optional(),
+  rasva: z.string().optional(),
+  hiilarit: z.string().optional(),
+  sokerit_yht: z.string().optional(),
+  sokerit_lis: z.string().optional(),
+  proteiini: z.string().optional(),
+  suola: z.string().optional(),
 });
 export type ProductInput = z.infer<typeof ProductSchema>;

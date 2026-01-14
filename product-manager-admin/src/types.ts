@@ -4,7 +4,7 @@ export type Product = {
   ingredients?: string | null;
   allergens?: string | null;
   photoUrl?: string | null;
-  size?: string | null; 
+  size?: string | null;
   createdAt: string;
   updatedAt: string;
   price?: string | null;
@@ -13,6 +13,13 @@ export type Product = {
   producedIn?: string | null;
   ECodes?: string | null;
   preservation?: string | null;
+  energia?: string | null;
+  rasva?: string | null;
+  hiilarit?: string | null;
+  sokerit_yht?: string | null;
+  sokerit_lis?: string | null;
+  proteiini?: string | null;
+  suola?: string | null;
 };
 
 export type ListResponse<T> = { items: T[]; nextCursor: string | null };

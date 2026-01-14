@@ -1,12 +1,13 @@
 
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "mysql"
   url  	    = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "windows"]
 }
 
 
@@ -22,7 +23,14 @@ model Product {
   producer      String?
   producedIn    String?
   ECodes        String?
-  preservation  String?       
+  preservation  String?
+  energia       String?
+  rasva         String?
+  hiilarit      String?
+  sokerit_yht   String?
+  sokerit_lis   String?
+  proteiini     String?
+  suola         String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

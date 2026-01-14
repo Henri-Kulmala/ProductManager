@@ -13,4 +13,11 @@ export type Product = {
   producedIn?: string | null;
   ECodes?: string | null;
   preservation?: string | null;
+  energia?: string | null;
+  rasva?: string | null;
+  hiilarit?: string | null;
+  sokerit_yht?: string | null;
+  sokerit_lis?: string | null;
+  proteiini?: string | null;
+  suola?: string | null;
 };

@@ -51,11 +51,12 @@ export default function ProductsTable({
             <th>Tuotenimi</th>
             <th>EAN</th>
             <th>Ainesosat</th>
-            <th>Päivitetty</th>
+            <th>Ravintosisältö per/100g</th>
             <th>Valmistusmaa</th>
             <th>Valmistaja</th>
             <th>E-Koodit</th>
             <th>Säilytys</th>
+            <th>Päivitetty</th>
           </tr>
         </thead>
         <tbody>
@@ -78,11 +79,40 @@ export default function ProductsTable({
               <td className="truncate">
                 {p.ingredients ?? <span style={{ opacity: 0.5 }}>–</span>}
               </td>
-              <td>{new Date(p.updatedAt).toLocaleDateString("fi-FI")}</td>
+
+              <tr className="nutrition-table">
+                <td>Energia</td>
+                <td>{p.energia ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Rasva</td>
+                <td>{p.rasva ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Hiilihydraatit</td>
+                <td>{p.hiilarit ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Joista sok.</td>
+                <td>{p.sokerit_yht ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Lisättyjä sokereita</td>
+                <td>{p.sokerit_lis ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Proteiini</td>
+                <td>{p.proteiini ?? "-"}</td>
+              </tr>
+              <tr className="nutrition-table">
+                <td>Suola</td>
+                <td>{p.suola ?? "-"}</td>
+              </tr>
               <td>{p.producedIn ?? "-"}</td>
               <td>{p.producer ?? "-"}</td>
               <td>{p.ECodes ?? "-"}</td>
               <td>{p.preservation ?? "-"}</td>
+              <td>{new Date(p.updatedAt).toLocaleDateString("fi-FI")}</td>
             </tr>
           ))}
           {items.length === 0 && (

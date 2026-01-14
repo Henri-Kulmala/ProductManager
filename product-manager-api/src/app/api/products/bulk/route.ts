@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       // 2) Fallback: case-insensitive name
       if (!existing) {
         existing = await prisma.product.findFirst({
-          where: { name: { equals: p.name.trim(), mode: "insensitive" } },
+          where: { name: { equals: p.name.trim() } },
         });
       }
 
@@ -53,6 +53,13 @@ export async function POST(req: Request) {
             producedIn: p.producedIn,
             ECodes: p.ECodes,
             preservation: p.preservation,
+            energia: p.energia,
+            rasva: p.rasva,
+            hiilarit: p.hiilarit,
+            sokerit_yht: p.sokerit_yht,
+            sokerit_lis: p.sokerit_lis,
+            proteiini: p.proteiini,
+            suola: p.suola,
           },
         });
         results.push(updated);
@@ -70,6 +77,13 @@ export async function POST(req: Request) {
             producedIn: p.producedIn,
             ECodes: p.ECodes,
             preservation: p.preservation,
+            energia: p.energia,
+            rasva: p.rasva,
+            hiilarit: p.hiilarit,
+            sokerit_yht: p.sokerit_yht,
+            sokerit_lis: p.sokerit_lis,
+            proteiini: p.proteiini,
+            suola: p.suola,
           },
         });
         results.push(created);
