@@ -1,10 +1,14 @@
-import { prisma } from "@/lib/prisma";
+import { db, newId } from "@/lib/db";
 import { withCORS, preflight } from "@/lib/cors";
 import { ProductSchema } from "@/lib/validation";
 import { requireUser } from "@/lib/auth";
 
 export function OPTIONS(req: Request) {
   return preflight(req);
+}
+
+function likeContains(v: string) {
+  return `%${v}%`;
 }
 
 export async function GET(req: Request) {
@@ -24,34 +28,55 @@ export async function GET(req: Request) {
       parseInt(url.searchParams.get("limit") || "50", 10),
       100
     );
-    const cursor = url.searchParams.get("cursor") || undefined;
+    const cursor = url.searchParams.get("cursor") || "";
 
-    const where: any = {};
-    const or: any[] = [];
+    let q = db.selectFrom("Product").selectAll();
 
     if (search) {
-      or.push(
-        { name: { contains: search } },
-        { ingredients: { contains: search } },
-        { allergens: { contains: search } },
-        { EAN: { contains: search } }
+      const pat = likeContains(search);
+      q = q.where((eb) =>
+        eb.or([
+          eb("name", "like", pat),
+          eb("ingredients", "like", pat),
+          eb("allergens", "like", pat),
+          eb("EAN", "like", pat),
+        ])
       );
     }
 
     if (ean) {
-      or.push({ EAN: { contains: ean } });
+      const pat = likeContains(ean);
+      q = q.where("EAN", "like", pat);
     }
 
-    if (or.length) where.OR = or;
+    if (cursor) {
+      const cursorRow = await db
+        .selectFrom("Product")
+        .select(["createdAt", "id"])
+        .where("id", "=", cursor)
+        .executeTakeFirst();
 
-    const items = await prisma.product.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      take: limit + 1,
-      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    });
+      if (cursorRow) {
+        q = q.where((eb) =>
+          eb.or([
+            eb("createdAt", "<", cursorRow.createdAt),
+            eb.and([
+              eb("createdAt", "=", cursorRow.createdAt),
+              eb("id", "<", cursorRow.id),
+            ]),
+          ])
+        );
+      }
+    }
+
+    const items = await q
+      .orderBy("createdAt", "desc")
+      .orderBy("id", "desc")
+      .limit(limit + 1)
+      .execute();
 
     const nextCursor = items.length > limit ? items.pop()!.id : null;
+
     return withCORS(Response.json({ items, nextCursor }), req);
   } catch {
     return withCORS(
@@ -81,8 +106,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const created = await prisma.product.create({
-      data: {
+    const now = new Date();
+    const id = newId();
+
+    await db
+      .insertInto("Product")
+      .values({
+        id,
         name: parsed.data.name,
         ingredients: parsed.data.ingredients ?? null,
         allergens: parsed.data.allergens ?? null,
@@ -101,8 +131,16 @@ export async function POST(req: Request) {
         sokerit_lis: parsed.data.sokerit_lis ?? null,
         proteiini: parsed.data.proteiini ?? null,
         suola: parsed.data.suola ?? null,
-      },
-    });
+        createdAt: now,
+        updatedAt: now,
+      })
+      .execute();
+
+    const created = await db
+      .selectFrom("Product")
+      .selectAll()
+      .where("id", "=", id)
+      .executeTakeFirst();
 
     return withCORS(Response.json(created, { status: 201 }), req);
   } catch {

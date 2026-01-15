@@ -7,6 +7,7 @@ import {
   updateProduct,
 } from "./lib/api";
 import type { Product } from "./types";
+import type { ProductInput} from "./lib/validation";
 import ProductForm from "./components/ProductForm";
 import ProductsTable from "./components/ProductsTable";
 import BulkImport from "./components/BulkImport";
@@ -49,7 +50,7 @@ export default function App() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<ProductInput> }) =>
       updateProduct(id, data),
     onSuccess: () => {
       setEditing(null);

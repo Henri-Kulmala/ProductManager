@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef } from "react";
 import { MdEdit } from "react-icons/md";
-
 import type { Product } from "../types";
 
 type Props = {
   items: Product[];
   selected: Set<string>;
   onToggle: (id: string) => void;
-  onToggleAll: (checked: boolean) => void; 
+  onToggleAll: (checked: boolean) => void;
   onEdit: (p: Product) => void;
 };
+
+function fmt(v: string | null | undefined) {
+  return v?.trim() ? v : "-";
+}
 
 export default function ProductsTable({
   items,
@@ -27,7 +30,6 @@ export default function ProductsTable({
     [selected.size, allChecked]
   );
 
- 
   const masterRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (masterRef.current) masterRef.current.indeterminate = someChecked;
@@ -79,35 +81,38 @@ export default function ProductsTable({
               <td className="truncate">
                 {p.ingredients ?? <span style={{ opacity: 0.5 }}>–</span>}
               </td>
-
-              <tr className="nutrition-table">
-                <td>Energia</td>
-                <td>{p.energia ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Rasva</td>
-                <td>{p.rasva ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Hiilihydraatit</td>
-                <td>{p.hiilarit ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Joista sok.</td>
-                <td>{p.sokerit_yht ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Lisättyjä sokereita</td>
-                <td>{p.sokerit_lis ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Proteiini</td>
-                <td>{p.proteiini ?? "-"}</td>
-              </tr>
-              <tr className="nutrition-table">
-                <td>Suola</td>
-                <td>{p.suola ?? "-"}</td>
-              </tr>
+              <td>
+                <div className="nutrition">
+                  <div className="nutrition-row">
+                    <span>Energia</span>
+                    <span>{fmt(p.energia)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Rasva</span>
+                    <span>{fmt(p.rasva)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Hiilihydraatit</span>
+                    <span>{fmt(p.hiilarit)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Joista sok.</span>
+                    <span>{fmt(p.sokerit_yht)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Lisätyt sokerit</span>
+                    <span>{fmt(p.sokerit_lis)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Proteiini</span>
+                    <span>{fmt(p.proteiini)}</span>
+                  </div>
+                  <div className="nutrition-row">
+                    <span>Suola</span>
+                    <span>{fmt(p.suola)}</span>
+                  </div>
+                </div>
+              </td>
               <td>{p.producedIn ?? "-"}</td>
               <td>{p.producer ?? "-"}</td>
               <td>{p.ECodes ?? "-"}</td>
@@ -117,7 +122,7 @@ export default function ProductsTable({
           ))}
           {items.length === 0 && (
             <tr>
-              <td colSpan={6} className="empty-state">
+              <td colSpan={11} className="empty-state">
                 Ei tuloksia
               </td>
             </tr>
@@ -126,5 +131,4 @@ export default function ProductsTable({
       </table>
     </div>
   );
-
 }

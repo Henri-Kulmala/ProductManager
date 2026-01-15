@@ -1,17 +1,15 @@
 import type { Product } from "../types";
 
-const API = import.meta.env.VITE_API_URL as string; 
+const API = import.meta.env.VITE_API_URL as string;
 
-export async function listProducts(
-  search?: string,
-): Promise<Product[]> {
+export async function listProducts(search?: string): Promise<Product[]> {
   const params = new URLSearchParams();
-
   if (search) params.set("search", search.trim());
-
-
   const qs = params.toString();
-  const res = await fetch(`${API}?${qs}`, { cache: "no-store" });
+
+  const res = await fetch(`${API}/api/public/products${qs ? `?${qs}` : ""}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import fs from "fs";
 
 const LOG_PATH = "/home/henkkako/productmanager/runtime.log";
@@ -26,7 +26,10 @@ export async function GET() {
 
   try {
     log("HEALTH_CHECK_DB_PING");
-    await withTimeout(prisma.$queryRaw`SELECT 1`, 1500);
+    await withTimeout(
+      db.selectFrom("Product").select("id").limit(1).execute(),
+      1500
+    );
     log("HEALTH_CHECK_DB_OK");
 
     return Response.json({

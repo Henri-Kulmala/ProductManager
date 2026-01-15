@@ -161,6 +161,7 @@ export default function BulkImport({ apiBase, onImported, onClose }: Props) {
       const res = await fetch(`${base}/api/products/bulk`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ products: individuallyChecked }),
       });
 

@@ -1,3 +1,6 @@
+import type { Product, ListResponse } from "../types";
+import type { ProductInput } from "./validation";
+
 const API_URL = import.meta.env.VITE_API_URL!;
 
 type ApiError = Error & { status?: number; body?: string };
@@ -51,8 +54,6 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   return (await res.text()) as unknown as T;
 }
 
-export type ListResponse<T> = { items: T[]; nextCursor: string | null };
-
 export async function listProducts(params: {
   search?: string;
   limit?: number;
@@ -65,18 +66,18 @@ export async function listProducts(params: {
   if (params.cursor) qs.set("cursor", params.cursor);
   if (params.ean) qs.set("ean", params.ean);
   const q = qs.toString();
-  return apiFetch<ListResponse<any>>(`/api/products${q ? `?${q}` : ""}`);
+  return apiFetch<ListResponse<Product>>(`/api/products${q ? `?${q}` : ""}`);
 }
 
-export async function createProduct(data: any) {
-  return apiFetch<any>("/api/products", {
+export async function createProduct(data: ProductInput) {
+  return apiFetch<Product>("/api/products", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export async function updateProduct(id: string, data: any) {
-  return apiFetch<any>(`/api/products/${id}`, {
+export async function updateProduct(id: string, data: Partial<ProductInput>) {
+  return apiFetch<Product>(`/api/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
