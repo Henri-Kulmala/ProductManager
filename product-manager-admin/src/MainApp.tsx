@@ -1,11 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { login, logout, getUser } from "./lib/auth";
-import { supabase } from "./lib/supabase";
 import App from "./App";
 
 function LoginForm({ onSuccess }: { onSuccess: () => void }) {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -14,30 +12,30 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     e.preventDefault();
     setBusy(true);
     setErr(null);
-    const ok = await login(email, password);
+    const ok = await login(username, password);
     setBusy(false);
     if (ok) onSuccess();
-    else setErr("Virheellinen sähköposti tai salasana");
+    else setErr("Virheellinen käyttäjätunnus tai salasana");
   }
 
   return (
-
     <div className="login-container">
       <div className="login-card card">
         <img
           src="https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Bolen-Hella-W.svg"
           alt="logo"
-            className="login-logo"
+          className="login-logo"
         />
         <h2>Kirjaudu hallintapaneeliin</h2>
         <form onSubmit={handleSubmit} className="form">
           <div className="form-group">
             <label>Käyttäjätunnus</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Syötä sähköpostiosoite"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Syötä käyttäjätunnus"
+              autoComplete="username"
             />
           </div>
 
@@ -48,13 +46,14 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Syötä salasana"
+              autoComplete="current-password"
             />
           </div>
 
           {err && <p style={{ color: "crimson" }}>{err}</p>}
 
           <div className="form-actions">
-            <button type="submit" disabled={busy}className="btn-primary full">
+            <button type="submit" disabled={busy} className="btn-primary full">
               {busy ? "Kirjaudutaan…" : "Kirjaudu"}
             </button>
           </div>
@@ -69,23 +68,20 @@ export default function MainApp() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
+    let cancelled = false;
 
-   
-    getUser().then((u) => {
-      if (!mounted) return;
-      setLoggedIn(!!u);
-      setLoading(false);
-    });
-
-   
-    const { data: sub } = supabase.auth.onAuthStateChange((_ev, session) => {
-      setLoggedIn(!!session?.user);
-    });
+    getUser()
+      .then((u) => {
+        if (cancelled) return;
+        setLoggedIn(!!u);
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoading(false);
+      });
 
     return () => {
-      mounted = false;
-      sub?.subscription.unsubscribe();
+      cancelled = true;
     };
   }, []);
 

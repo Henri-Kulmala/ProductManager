@@ -1,21 +1,44 @@
-// src/lib/auth.ts
-import { supabase } from "./supabase";
+const API_URL = import.meta.env.VITE_API_URL!;
 
-export async function login(email: string, password: string): Promise<boolean> {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  return !error;
+export type SessionUser = { id: string; role: string };
+
+export async function login(
+  username: string,
+  password: string
+): Promise<boolean> {
+  let res: Response;
+
+  try {
+    res = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+    });
+  } catch {
+    return false;
+  }
+
+  return res.status === 204;
 }
 
 export async function logout(): Promise<void> {
-  await supabase.auth.signOut();
+  await fetch(`${API_URL}/api/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+    headers: { Accept: "application/json" },
+  });
 }
 
-export async function getUser() {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.user ?? null;
-}
-
-export async function getAccessToken(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+export async function getUser(): Promise<SessionUser | null> {
+  const res = await fetch(`${API_URL}/api/auth/me`, {
+    credentials: "include",
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as { user: SessionUser | null };
+  return data.user ?? null;
 }

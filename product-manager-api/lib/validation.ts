@@ -43,6 +43,34 @@ export const ProductSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  energia: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  rasva: z
+    .string()
+    .optional() 
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  hiilarit: z
+    .string()
+    .optional() 
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  sokerit_yht: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  sokerit_lis: z  
+    .string() 
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  proteiini: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  suola: z
+    .string()
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
     
 });
 

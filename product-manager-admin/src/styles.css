@@ -1,13 +1,13 @@
 @font-face {
     font-family: "Skatta";
-    src: url(https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Skatta-Sans-Regular.woff2) format("woff2");
+    src: url(./Fonts/Skatta\ Sans\ Condensed\ Regular.woff2) format("woff2");
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: "Skatta";
-    src: url(https://www.xn--blenhella-07a.fi/wp-content/uploads/2025/09/Skatta-Sans-Bold.woff2) format("woff2");
+    src: url(./Fonts/Skatta\ Sans\ Condensed\ Bold.woff2) format("woff2");
     font-weight: 700;
     font-style: normal;
 }
@@ -317,7 +317,7 @@ input[type="checkbox"] {
 .tbl {
     width: 100%;
     border-collapse: collapse;
-    min-width: 700px;
+    min-width: 800px;
     overflow: auto;
 }
 
@@ -480,3 +480,10 @@ input[type="checkbox"] {
 }
 
 
+.nutrition-table td {
+    padding: 4px 2px;
+    border-bottom: 1px solid #2b2f36;
+    vertical-align: top;
+    font-size: 12px;
+    width: auto;
+}

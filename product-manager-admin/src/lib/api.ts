@@ -1,61 +1,58 @@
-// src/lib/api.ts
-import { getAccessToken } from "./auth";
-import { supabase } from "./supabase";
+import type { Product, ListResponse } from "../types";
+import type { ProductInput } from "./validation";
 
 const API_URL = import.meta.env.VITE_API_URL!;
 
-
-async function doFetch(path: string, init: RequestInit, token: string) {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      ...(init.headers || {}),
-      Authorization: `Bearer ${token}`,
-     
-      ...(init.body ? { "Content-Type": "application/json" } : {}),
-    },
-  });
-  return res;
-}
+type ApiError = Error & { status?: number; body?: string };
 
 async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  let token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
+  const headers = new Headers(init.headers);
 
-  let res = await doFetch(path, init, token);
+  if (!headers.has("Accept")) headers.set("Accept", "application/json");
 
- 
-  if (res.status === 401) {
-   
-    await supabase.auth.refreshSession();
-    token = await getAccessToken();
-    if (!token) throw new Error("Not authenticated");
-    res = await doFetch(path, init, token);
+  const hasBody = init.body !== undefined && init.body !== null;
+  if (hasBody && !headers.has("Content-Type"))
+    headers.set("Content-Type", "application/json");
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      ...init,
+      credentials: "include",
+      headers,
+    });
+  } catch (e) {
+    const err: ApiError = new Error(
+      "Network/CORS error: API is not reachable from this origin."
+    );
+    err.status = 0;
+    err.body = String(e);
+    throw err;
   }
 
   if (res.status === 401 || res.status === 403) {
-    throw new Error("Unauthorized");
+    const err: ApiError = new Error("Unauthorized");
+    err.status = res.status;
+    throw err;
   }
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`API ${res.status}: ${text || res.statusText}`);
+    const err: ApiError = new Error(
+      `API ${res.status}: ${text || res.statusText}`
+    );
+    err.status = res.status;
+    err.body = text;
+    throw err;
   }
 
- 
   if (res.status === 204) return undefined as unknown as T;
 
- 
   const ctype = res.headers.get("content-type") || "";
-  if (ctype.includes("application/json")) {
-    return (await res.json()) as T;
-  }
+  if (ctype.includes("application/json")) return (await res.json()) as T;
 
- 
-  const text = (await res.text()) as unknown as T;
-  return text;
+  return (await res.text()) as unknown as T;
 }
-
-export type ListResponse<T> = { items: T[]; nextCursor: string | null };
 
 export async function listProducts(params: {
   search?: string;
@@ -69,24 +66,23 @@ export async function listProducts(params: {
   if (params.cursor) qs.set("cursor", params.cursor);
   if (params.ean) qs.set("ean", params.ean);
   const q = qs.toString();
-  return apiFetch<ListResponse<any>>(`/api/products${q ? `?${q}` : ""}`);
+  return apiFetch<ListResponse<Product>>(`/api/products${q ? `?${q}` : ""}`);
 }
 
-export async function createProduct(data: any) {
-  return apiFetch<any>("/api/products", {
+export async function createProduct(data: ProductInput) {
+  return apiFetch<Product>("/api/products", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-export async function updateProduct(id: string, data: any) {
-  return apiFetch<any>(`/api/products/${id}`, {
+export async function updateProduct(id: string, data: Partial<ProductInput>) {
+  return apiFetch<Product>(`/api/products/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteProduct(id: string) {
- 
   return apiFetch<void>(`/api/products/${id}`, { method: "DELETE" });
 }
