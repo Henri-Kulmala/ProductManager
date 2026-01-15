@@ -4,10 +4,13 @@
 ## Table of contents
 
 1. [Description](#description)
-2. [Application Security](#application-security)
-3. [Database](#database)
-4. [Code Stack](#code-stack)
-5. [User Manual & Initialization](#user-manual--initialization)
+2. [Application Security](#architecture-overview)
+3. [Interface snapshots](#-interface-snapshots)
+4. [Application Security](#application-security)
+5. [Database](#database)
+6. [API endpoints](#api-endpoints)
+7. [Code Stack](#code-stack)
+8. [Local Development & Deployment](#local-development--deployment)
 
 
 
@@ -17,19 +20,31 @@
 ## Description
 
 
-**ProductManager** is a full-stack web application for managing and publishing structured product information.  
-The project was designed as a lightweight and secure admin interface that allows the creation, modification, and deletion of product data stored in a cloud database. This data is then used to output a list of products for customers to view.
+**Product Manager** is a full-stack web application for managing and publishing structured product information.  
+The project was built as a lightweight alternative to a full CMS, focusing on **clarity, performance, and operational reliability**.
 
-### Key Features
-- Modern React + Vite **frontend** for a responsive admin panel  
-- Secure **Next.js (App Router)** API backend  
-- Cloud-hosted **PostgreSQL database (Neon)** via Prisma ORM  
-- **Supabase authentication** for admin access  
-- Fully CORS-protected **REST API** with granular access control  
-- Deployed on **Render (API)** and **cPanel (Frontend)**  
+The system allows an admin user to manage product data through a dedicated admin panel, while exposing a **read-only public product listing API** for customer-facing use.
 
-The system enables small businesses or internal teams to manage product data without needing a full CMS (content management system).
+The solution is designed to work reliably in **traditional hosting environments** (cPanel / Passenger), without requiring container-based platforms or heavy ORM tooling.
 
+---
+
+## Architecture Overview
+
+The system consists of three separate applications:
+
+- **product-manager-api**  
+  Next.js (App Router) API backend
+
+- **product-manager-admin**  
+  React + Vite admin interface for product management
+
+- **product-manager-front**  
+  Public-facing product listing site consuming a read-only API
+
+All applications communicate via HTTP APIs and share a single MySQL database.
+
+---
 
 ###  📷 Interface snapshots 
 
@@ -63,181 +78,208 @@ Here you can see the landing page for the admin panel.
 
 ---
 
-##  Application Security
-
-
-The project emphasizes security both at the application and infrastructure level.
+## Application Security
 
 ### Authentication & Authorization
-- Uses **Supabase Auth** with email-password authentication.
-- All API routes are protected by a server-side verification of the Supabase access token.
-- Session tokens are stored securely in the client’s local storage and transmitted via HTTPS.
+
+- Admin access is protected using **Basic Authentication**
+- Successful login creates a **server-side session**, stored and verified via secure cookies
+- All admin API routes require a valid session
+
+### Public Access
+
+- A dedicated **public API endpoint** is exposed for product listing
+- Public endpoints are **read-only** and do not require authentication
+- No admin or mutation routes are accessible without a session
 
 ### CORS Policy
-- Strict `Access-Control-Allow-Origin` enforcement using environment variables (`ADMIN_ORIGIN` or `ADMIN_ORIGINS`).
-- Only pre-defined admin frontend domains are permitted to communicate with the API.
-- OPTIONS preflight requests are handled server-side to ensure browser compliance.
+
+- Admin API routes allow requests only from explicitly defined admin origins
+- Public API routes allow cross-origin GET requests
+- Preflight (`OPTIONS`) requests are handled explicitly
 
 ### Environment Variables
-Sensitive keys and database credentials are **never committed to version control**.  
-They are defined through Render’s **Environment Variables** interface:
-```
-DATABASE_URL=postgresql://...
-SUPABASE_URL=https://project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=...
-ADMIN_ORIGIN=https://admin.example.com
+
+Sensitive values are never committed to version control.
+
+Example backend environment variables:
+
+```env
+DATABASE_URL=mysql://user:password@localhost:3306/database
+SESSION_SECRET=super-secret-string
+ADMIN_ORIGINS=https://admin.example.com,http://localhost:5173
 NODE_ENV=production
 ```
 
-### Data Protection
-- Neon’s PostgreSQL instance enforces **TLS (SSL)** connections (`sslmode=require`).
-- Supabase tokens and Prisma connections are stored only in secure server memory.
-- No personal data or payment data is stored in this application — only product metadata.
-
-
-
 ---
 
-##  Database
+## Database
 
+### Chosen Database: **MySQL (cPanel)**
 
-### Chosen Service: **Neon (PostgreSQL)**
+The application uses a MySQL database provisioned via **cPanel**.
 
-The database is hosted on **[Neon.tech](https://neon.tech)** — a managed PostgreSQL service providing:
-- Persistent **Free Tier** (0.5 GB storage, 1 project)
-- Automatic **SSL/TLS encryption**
-- **EU region** data residency (GDPR compliant)
-- Seamless integration with **Prisma ORM** and **Render**
-- Instant branch creation for testing and rollback
+Reasons for this choice:
+
+- Native availability in shared hosting environments
+- No external dependencies
+- Predictable performance and behavior
+
+### Query Layer: **Kysely**
+
+Database access is implemented using **Kysely**, a TypeScript SQL query builder.
+
+Key benefits:
+
+- Fully type-safe SQL queries
+- No runtime query engine or native binaries
+- Direct control over SQL behavior
+- Excellent compatibility with cPanel / Passenger
 
 ### Schema Management
-- Database schema is defined in `prisma/schema.prisma`
-- Migrations handled by:
-  ```bash
-  npx prisma migrate deploy
-  ```
-- Prisma Client is auto-generated during the build process (`postinstall` script).
 
-### Example Model
-```prisma
-model Product {
-  id            String   @id @default(cuid())
-  name          String                
-  ingredients   String?               
-  allergens     String?               
-  size          String?
-  price         String?
-  EAN           String?                
-  photoUrl      String?        
-  producer      String?
-  producedIn    String?
-  ECodes        String?
-  preservation  String?       
+- Database schema is managed manually (SQL)
+- No ORM migrations or generated clients
+- Schema changes are explicit and transparent
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+Example table:
 
-}
+```sql
+CREATE TABLE Product (
+  id VARCHAR(191) PRIMARY KEY,
+  name VARCHAR(191) NOT NULL,
+  ingredients TEXT NULL,
+  allergens TEXT NULL,
+  size VARCHAR(191) NULL,
+  price VARCHAR(191) NULL,
+  EAN VARCHAR(191) NULL,
+  photoUrl TEXT NULL,
+  producer VARCHAR(191) NULL,
+  producedIn VARCHAR(191) NULL,
+  ECodes TEXT NULL,
+  preservation TEXT NULL,
+  energia VARCHAR(191) NULL,
+  rasva VARCHAR(191) NULL,
+  hiilarit VARCHAR(191) NULL,
+  sokerit_yht VARCHAR(191) NULL,
+  sokerit_lis VARCHAR(191) NULL,
+  proteiini VARCHAR(191) NULL,
+  suola VARCHAR(191) NULL,
+  createdAt DATETIME NOT NULL,
+  updatedAt DATETIME NOT NULL
+);
 ```
 
+---
 
+## API Endpoints
+
+### Authenticated (Admin only)
+
+| Method | Endpoint | Description |
+|------|--------|-------------|
+| POST | `/api/auth/login` | Login (BasicAuth → session cookie) |
+| POST | `/api/auth/logout` | Logout and destroy session |
+| GET | `/api/auth/me` | Get current authenticated user |
+| GET | `/api/products` | List products (admin view) |
+| POST | `/api/products` | Create new product |
+| PUT | `/api/products/:id` | Update product |
+| DELETE | `/api/products/:id` | Delete product |
+| POST | `/api/products/bulk` | Bulk import products |
+
+All routes above require a valid session.
 
 ---
 
-##  Code Stack
+### Public (Unauthenticated)
 
+| Method | Endpoint | Description |
+|------|--------|-------------|
+| GET | `/api/public/products` | Public product listing (read-only) |
 
-### Code stack and services used in the project
+This endpoint is consumed by **product-manager-front** and is safe to expose publicly.
 
-[![Code Stack](https://skillicons.dev/icons?i=ts,html,css,react,vite,nodejs,supabase,prisma)](https://skillicons.dev)
+---
 
-### Frontend
-| Technology | Purpose |
-|-------------|----------|
-| **Vite + React (TypeScript)** | High-performance single-page admin panel |
-| **React Query** | Client-side caching and mutations |
-| **Supabase JS SDK** | Authentication client |
-| **TailwindCSS / Custom CSS** | Styling and responsive layout |
+## Code Stack
+
+### Frontend (Admin)
+
+- React
+- Vite
+- TypeScript
+- React Query
+- Zod
+- Custom CSS
+
+### Frontend (Public)
+
+- React
+- Vite
+- TypeScript
+- Static product listing UI
 
 ### Backend
-| Technology | Purpose |
-|-------------|----------|
-| **Next.js 15 (App Router)** | API routes and server runtime |
-| **Prisma ORM** | PostgreSQL connection management |
-| **Supabase Auth (server SDK)** | Token validation |
-| **Render Web Service** | API deployment environment |
-| **Node.js 18+** | Runtime environment |
-| **Zod** | Input validation for all API payloads |
 
-### Deployment Overview
-| Component | Platform | Notes |
-|------------|-----------|-------|
-| Frontend | **cPanel (Apache)** | Deployed as static Vite build (`/dist`) |
-| Backend | **Render Web Service** | Runs `next start -p $PORT` |
-| Database | **Neon (PostgreSQL)** | SSL-secured free tier |
-| Auth | **Supabase** | Password-based email login |
+- Next.js (App Router)
+- Node.js
+- Kysely
+- MySQL
+- Zod (validation)
 
+### Deployment
 
+| Component | Platform |
+|--------|---------|
+| API | cPanel / Passenger (Node.js app) |
+| Admin UI | cPanel (static Vite build) |
+| Public UI | cPanel (static Vite build) |
+| Database | cPanel MySQL |
 
 ---
 
-##  User Manual & Initialization
+## Local Development & Deployment
 
+### Install dependencies
 
-### 1. Clone and install
 ```bash
-git clone https://github.com/yourusername/product-manager.git
-cd product-manager
 npm install
 ```
 
-### 2. Environment setup
-Create `.env.local` in the **backend**:
-```env
-DATABASE_URL=postgresql://user:password@ep-neon-db-url/neondb
-SUPABASE_URL=https://yourproject.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=service-role-key
-ADMIN_ORIGIN=http://localhost:5173
-```
+### Run locally
 
-Create `.env` in the **frontend**:
-```env
-VITE_API_URL=http://localhost:3000
-VITE_SUPABASE_URL=https://yourproject.supabase.co
-VITE_SUPABASE_ANON_KEY=anon-key
-```
-
-### 3. Run locally
-In two terminals:
 ```bash
-# Terminal 1 - Backend
+# Backend
+cd product-manager-api
 npm run dev
 
-# Terminal 2 - Frontend
+# Admin UI
 cd product-manager-admin
 npm run dev
-```
-Open: **http://localhost:5173**
 
-### 4. Deployment
-**Backend:**  
-Render → New Web Service → Connect repository →  
-Build command: `npm ci && npm run build`  
-Start command: `npm run start`  
-
-**Frontend:**  
-Build locally then upload `/dist` to your cPanel document root:
-```bash
-npm run build
+# Public UI
+cd product-manager-front
+npm run dev
 ```
 
-### 5. Usage
-- Log in using your Supabase credentials.  
-- Manage products: *Add*, *Edit*, *Delete*, *Search*.  
-- Data syncs automatically with the Neon database via the Render API.
+### Deployment (cPanel)
 
-
+- Backend deployed as **Next.js standalone build**
+- Static frontends deployed via Vite `/dist`
+- Environment variables configured in **cPanel → Setup Node.js App**
 
 ---
+
+## Summary
+
+This project demonstrates a **deliberate architectural choice** to prioritize:
+
+- Operational stability
+- Type safety without heavy ORM tooling
+- Compatibility with traditional hosting
+- Clear separation between admin and public access
+
+It is intentionally simple, explicit, and production-focused.
+
 
 
