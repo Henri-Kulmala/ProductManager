@@ -29,8 +29,8 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
       photoUrl: initial?.photoUrl ?? "",
       price: initial?.price ?? "",
       EAN: initial?.EAN ?? "",
-      producer: initial?.producer ?? "",
-      producedIn: initial?.producedIn ?? "",
+      producer: initial?.producer ?? "K-Supermarket Tripla Bölen Hella",
+      producedIn: initial?.producedIn ?? "Suomi",
       ECodes: initial?.ECodes ?? "",
       preservation: initial?.preservation ?? "",
       energia: initial?.energia ?? "",
@@ -59,19 +59,6 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
         <label>Koko</label>
         <input {...register("size")} placeholder="Esim. 250 g / 500 ml" />
         {errors.size && <span className="err">{errors.size.message}</span>}
-      </div>
-
-      <div className="form-group full">
-        <label>Ainesosat *</label>
-        <textarea
-          rows={3}
-          placeholder="Kirjoita pilkuilla tai riveittäin: maito, kaakao, sokeri"
-          {...register("ingredients")}
-          required
-        />
-        {errors.ingredients && (
-          <span className="err">{errors.ingredients.message}</span>
-        )}
       </div>
 
       <div className="form-group">
@@ -110,6 +97,40 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
         <label>EAN-Koodi *</label>
         <input {...register("EAN")} placeholder="123456789..." required />
         {errors.EAN && <span className="err">{errors.EAN.message}</span>}
+      </div>
+
+      <div className="form-group">
+        <label>E-Koodit</label>
+        <input {...register("ECodes")} placeholder="E-1234" />
+        {errors.ECodes && <span className="err">{errors.ECodes.message}</span>}
+      </div>
+      <div className="form-group">
+        <label>Säilytys</label>
+        <input {...register("preservation")} placeholder="Säilytys alle +5C " />
+        {errors.preservation && (
+          <span className="err">{errors.preservation.message}</span>
+        )}
+      </div>
+
+      <div className="form-group">
+        <label>Allergeenit</label>
+        <input {...register("allergens")} placeholder="maito, pähkinä" />
+        {errors.allergens && (
+          <span className="err">{errors.allergens.message}</span>
+        )}
+      </div>
+
+      <div className="form-group full">
+        <label>Ainesosat *</label>
+        <textarea
+          rows={3}
+          placeholder="Kirjoita pilkuilla tai riveittäin: maito, kaakao, sokeri"
+          {...register("ingredients")}
+          required
+        />
+        {errors.ingredients && (
+          <span className="err">{errors.ingredients.message}</span>
+        )}
       </div>
       <div className="form-group">
         <h2>Ravintosisältö /100g</h2>
@@ -150,27 +171,6 @@ export default function ProductForm({ initial, onSubmit, onCancel }: Props) {
         <input {...register("proteiini")} placeholder="5g" />
         {errors.proteiini && (
           <span className="err">{errors.proteiini.message}</span>
-        )}
-      </div>
-
-      <div className="form-group">
-        <label>E-Koodit</label>
-        <input {...register("ECodes")} placeholder="E-1234" />
-        {errors.ECodes && <span className="err">{errors.ECodes.message}</span>}
-      </div>
-      <div className="form-group">
-        <label>Säilytys</label>
-        <input {...register("preservation")} placeholder="Säilytys alle +5C " />
-        {errors.preservation && (
-          <span className="err">{errors.preservation.message}</span>
-        )}
-      </div>
-
-      <div className="form-group">
-        <label>Allergeenit</label>
-        <input {...register("allergens")} placeholder="maito, pähkinä" />
-        {errors.allergens && (
-          <span className="err">{errors.allergens.message}</span>
         )}
       </div>
 

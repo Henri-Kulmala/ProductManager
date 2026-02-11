@@ -98,6 +98,49 @@ export default function ProductItem({ product }: { product: Product }) {
                   {product.ECodes}
                 </p>
               )}
+              {product.energia && (
+                <p className="label">
+                  <strong className="secondary-text">Energia:</strong>{" "}
+                  {product.energia}
+                </p>
+              )}
+              {product.rasva && (
+                <p className="label">
+                  <strong className="secondary-text">Rasva:</strong>{" "}
+                  {product.rasva}
+                </p>
+              )}
+              {product.hiilarit && (
+                <p className="label">
+                  <strong className="secondary-text">Hiilihydraatit:</strong>{" "}
+                  {product.hiilarit}
+                </p>
+              )}
+              {product.sokerit_yht && (
+                <p className="label">
+                  <strong className="secondary-text">Sokerit yhteensä:</strong>{" "}
+                  {product.sokerit_yht}
+                </p>
+              )}
+              {product.sokerit_lis && (
+                <p className="label">
+                  <strong className="secondary-text">Lisätyt sokerit:</strong>{" "}
+                  {product.sokerit_lis}
+                </p> 
+              )}
+              {product.proteiini && (
+                <p className="label">
+                  <strong className="secondary-text">Proteiini:</strong>{" "}
+                  {product.proteiini}
+                </p>
+              )}
+              {product.suola && (
+                <p className="label">
+                  <strong className="secondary-text">Suola:</strong>{" "} 
+                  {product.suola}
+                </p>  
+              )}
+              
             </motion.div>
           </motion.div>
         )}
