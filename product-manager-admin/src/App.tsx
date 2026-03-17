@@ -116,7 +116,7 @@ export default function App() {
                 className="btn-rm"
                 onClick={() => {
                   const confirmDelete = window.confirm(
-                    "Haluatko varmasti poistaa valitut tuotteet?"
+                    "Haluatko varmasti poistaa valitut tuotteet?",
                   );
                   if (confirmDelete) {
                     deleteMut.mutate(Array.from(selected));
@@ -129,12 +129,28 @@ export default function App() {
         </div>
       </header>
 
-      <button
-        className="btn-primary"
-        type="button"
-        onClick={() => setShowBulkImport((v) => !v)}>
-        {showBulkImport ? "Peruuta" : "Tuo tuotteita CSV:stä"}
-      </button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "12px",
+        }}>
+        <button
+          className="btn-primary"
+          type="button"
+          onClick={() => {
+            setEditing(null);
+            setShowForm(true);
+          }}>
+          Lisää tuotteita
+        </button>
+        <button
+          className="btn-primary"
+          type="button"
+          onClick={() => setShowBulkImport((v) => !v)}>
+          {showBulkImport ? "Peruuta" : "Tuo tuotteita CSV:stä"}
+        </button>
+      </div>
 
       {showBulkImport && (
         <BulkImport
