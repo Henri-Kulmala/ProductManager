@@ -15,8 +15,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
     const ok = await login(username, password);
     setBusy(false);
     if (ok) onSuccess();
-    else onSuccess();
-    //else setErr("Virheellinen käyttäjätunnus tai salasana");
+    else setErr("Virheellinen käyttäjätunnus tai salasana");
   }
 
   return (

@@ -9,6 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ProductItem({ product }: { product: Product }) {
   const [open, setOpen] = useState(false);
 
+  const hasBasicInfo = product.producer || product.producedIn || product.preservation || product.ECodes;
+  const hasIngredients = product.ingredients || product.allergens;
+  const hasNutrition = product.energia || product.rasva || product.hiilarit || product.proteiini || product.suola;
+
   return (
     <div
       className={`product-card ${open ? "open" : ""}`}
@@ -16,17 +20,12 @@ export default function ProductItem({ product }: { product: Product }) {
       <div className="product-header">
         <div>
           {product.photoUrl && (
-            <img src={product.photoUrl ?? ""} className="product-image" />
+            <img src={product.photoUrl ?? ""} alt={product.name} className={open ? "product-image" : "product-image-small"} />
           )}
-
           <h3 className="label-name">{product.name}</h3>
-
           {product.EAN && <span className="span-label">{product.EAN}</span>}
           {product.size && <span className="span-label">{product.size}</span>}
-          {product.price && (
-            <span className="span-label">{product.price} €</span>
-          )}
-          
+          {product.price && <span className="span-label">{product.price}</span>}
         </div>
         <button className="toggle-btn" aria-label="Toggle details">
           {open ? <IoIosArrowDropupCircle /> : <IoIosArrowDropdownCircle />}
@@ -40,10 +39,7 @@ export default function ProductItem({ product }: { product: Product }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{
-              duration: 0.3,
-              ease: "easeInOut",
-            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
             className="product-details">
             <motion.div
@@ -51,96 +47,91 @@ export default function ProductItem({ product }: { product: Product }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.1, duration: 0.2 }}>
-              {product.ingredients && (
-                <p className="label">
-                  <strong className="secondary-text">Ainesosat:</strong>{" "}
-                  {product.ingredients}
-                </p>
+
+              {/* ── Tuotetiedot ─────────────────────────────── */}
+              {hasBasicInfo && (
+                <div className="detail-section">
+                  <h4 className="detail-section-title">Tuotetiedot</h4>
+                  <div className="detail-grid">
+                    {product.producer && (
+                      <><span className="detail-key">Valmistaja</span><span className="detail-val">{product.producer}</span></>
+                    )}
+                    {product.producedIn && (
+                      <><span className="detail-key">Alkuperämaa</span><span className="detail-val">{product.producedIn}</span></>
+                    )}
+                    {product.preservation && (
+                      <><span className="detail-key">Säilytys</span><span className="detail-val">{product.preservation}</span></>
+                    )}
+                    {product.ECodes && (
+                      <><span className="detail-key">E-Koodit</span><span className="detail-val">{product.ECodes}</span></>
+                    )}
+                  </div>
+                </div>
               )}
-              {product.allergens && (
-                <p className="label">
-                  <strong className="secondary-text">Allergeenit:</strong>{" "}
-                  {product.allergens}
-                </p>
+
+              {/* ── Ainesosat ───────────────────────────────── */}
+              {hasIngredients && (
+                <div className="detail-section">
+                  <h4 className="detail-section-title">Ainesosat</h4>
+                  {product.allergens && (
+                    <p className="detail-text">
+                      <span className="detail-key-inline">Allergeenit: </span>
+                      {product.allergens}
+                    </p>
+                  )}
+                  {product.ingredients && (
+                    <p className="detail-text">
+                      <span className="detail-key-inline">Ainesosat: </span>
+                      {product.ingredients}
+                    </p>
+                  )}
+                </div>
               )}
-              {product.price && (
-                <p className="label">
-                  <strong className="secondary-text">Hinta:</strong>{" "}
-                  {product.price + " €"}
-                </p>
+
+              {/* ── Ravintosisältö ───────────────────────────── */}
+              {hasNutrition && (
+                <div className="detail-section">
+                  <h4 className="detail-section-title">Ravintosisältö / 100 g</h4>
+                  <div className="nutrition-table">
+                    {product.energia && (
+                      <div className="nutrition-row">
+                        <span>Energia</span><span>{product.energia}</span>
+                      </div>
+                    )}
+                    {product.rasva && (
+                      <div className="nutrition-row">
+                        <span>Rasva</span><span>{product.rasva}</span>
+                      </div>
+                    )}
+                    {product.hiilarit && (
+                      <div className="nutrition-row">
+                        <span>Hiilihydraatit</span><span>{product.hiilarit}</span>
+                      </div>
+                    )}
+                    {product.sokerit_yht && (
+                      <div className="nutrition-row indented">
+                        <span>— josta sokerit</span><span>{product.sokerit_yht}</span>
+                      </div>
+                    )}
+                    {product.sokerit_lis && (
+                      <div className="nutrition-row indented">
+                        <span>— josta lisätyt</span><span>{product.sokerit_lis}</span>
+                      </div>
+                    )}
+                    {product.proteiini && (
+                      <div className="nutrition-row">
+                        <span>Proteiini</span><span>{product.proteiini}</span>
+                      </div>
+                    )}
+                    {product.suola && (
+                      <div className="nutrition-row">
+                        <span>Suola</span><span>{product.suola}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
-              {product.EAN && (
-                <p className="label">
-                  <strong className="secondary-text">EAN:</strong> {product.EAN}
-                </p>
-              )}
-              {product.producer && (
-                <p className="label">
-                  <strong className="secondary-text">Valmistaja:</strong>{" "}
-                  {product.producer}
-                </p>
-              )}
-              {product.producedIn && (
-                <p className="label">
-                  <strong className="secondary-text">Alkuperämaa:</strong>{" "}
-                  {product.producedIn}
-                </p>
-              )}
-              {product.preservation && (
-                <p className="label">
-                  <strong className="secondary-text">Säilytys:</strong>{" "}
-                  {product.preservation}
-                </p>
-              )}
-              {product.ECodes && (
-                <p className="label">
-                  <strong className="secondary-text">E-Koodit:</strong>{" "}
-                  {product.ECodes}
-                </p>
-              )}
-              {product.energia && (
-                <p className="label">
-                  <strong className="secondary-text">Energia:</strong>{" "}
-                  {product.energia}
-                </p>
-              )}
-              {product.rasva && (
-                <p className="label">
-                  <strong className="secondary-text">Rasva:</strong>{" "}
-                  {product.rasva}
-                </p>
-              )}
-              {product.hiilarit && (
-                <p className="label">
-                  <strong className="secondary-text">Hiilihydraatit:</strong>{" "}
-                  {product.hiilarit}
-                </p>
-              )}
-              {product.sokerit_yht && (
-                <p className="label">
-                  <strong className="secondary-text">Sokerit yhteensä:</strong>{" "}
-                  {product.sokerit_yht}
-                </p>
-              )}
-              {product.sokerit_lis && (
-                <p className="label">
-                  <strong className="secondary-text">Lisätyt sokerit:</strong>{" "}
-                  {product.sokerit_lis}
-                </p> 
-              )}
-              {product.proteiini && (
-                <p className="label">
-                  <strong className="secondary-text">Proteiini:</strong>{" "}
-                  {product.proteiini}
-                </p>
-              )}
-              {product.suola && (
-                <p className="label">
-                  <strong className="secondary-text">Suola:</strong>{" "} 
-                  {product.suola}
-                </p>  
-              )}
-              
+
             </motion.div>
           </motion.div>
         )}

@@ -154,9 +154,110 @@ body {
 }
 
 .product-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 1rem;
+}
+.product-image-small {
     width: 50px;
     height: 50px;
     object-fit: cover;
     border-radius: 4px;
     margin-right: 1rem;
+}
+
+/* ── Detail sections ───────────────────────────────── */
+.detail-section {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-section:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.detail-section-title {
+    color: var(--secondary-text);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem 0;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 1rem;
+}
+
+.detail-key {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.detail-val {
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.detail-text {
+    color: var(--text);
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.detail-key-inline {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Nutrition table ───────────────────────────────── */
+.nutrition-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.nutrition-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text);
+    padding: 0.1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nutrition-row.indented {
+    padding-left: 1rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+}
+
+/* ── Footer ────────────────────────────────────────── */
+.site-footer {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.site-footer p {
+    margin: 0 0 0.25rem 0;
+}
+
+.site-footer a {
+    color: var(--secondary-text);
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
 }
